@@ -1,22 +1,38 @@
+// lib/screens/welcome_screen.dart
 import 'package:flutter/material.dart';
 import 'login.dart';
-import 'signup.dart';
 
-class WelcomeScreen extends StatefulWidget {
+class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key, required this.title});
   final String title;
 
-  @override
-  State<WelcomeScreen> createState() => _WelcomeScreenState();
-}
+  Route _createLoginRoute() {
+    return PageRouteBuilder(
+      transitionDuration: const Duration(milliseconds: 550),
+      reverseTransitionDuration: const Duration(milliseconds: 400),
+      pageBuilder: (context, animation, secondaryAnimation) => const LoginScreen(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        // Slide from bottom to top with fade
+        final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+        final offsetAnim = Tween<Offset>(begin: const Offset(0.0, 1.0), end: Offset.zero)
+            .animate(curved);
+        final fadeAnim = Tween<double>(begin: 0.0, end: 1.0).animate(curved);
 
-class _WelcomeScreenState extends State<WelcomeScreen> {
+        return SlideTransition(
+          position: offsetAnim,
+          child: FadeTransition(opacity: fadeAnim, child: child),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Remove AppBar if you want a fullscreen welcome; keeping minimal here
       body: Stack(
         children: [
-          // Full screen background image
+          // Fullscreen background image
           SizedBox.expand(
             child: Image.asset(
               'assets/images/welcomepage.png',
@@ -38,15 +54,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
-                        ),
-                      );
+                      Navigator.of(context).push(_createLoginRoute());
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF099509).withOpacity(0.75), // 75% opacity
+                      backgroundColor:
+                          Color(0xFF099509).withOpacity(0.75),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
                       ),
@@ -55,7 +67,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       "Login",
                       style: TextStyle(
                         fontSize: 16,
-                        color: Color(0xFFFFFFFF), 
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -63,21 +75,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
                 const SizedBox(height: 15),
 
-                // SIGN UP BUTTON
+                // SIGN UP BUTTON (same style; navigate to signup when ready)
                 SizedBox(
                   width: 220,
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SignupScreen(),
-                        ),
-                      );
+                      // TODO: Navigate to signup when implemented
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF099509).withOpacity(0.75),
+                      backgroundColor:
+                          Color(0xFF099509).withOpacity(0.75),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
                       ),
@@ -86,7 +94,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       "Sign Up",
                       style: TextStyle(
                         fontSize: 16,
-                        color: Color(0xFFFFFFFF),
+                        color: Colors.white,
                       ),
                     ),
                   ),
