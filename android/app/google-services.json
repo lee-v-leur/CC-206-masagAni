@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1062682923491",
+    "project_id": "masagani-app-1",
+    "storage_bucket": "masagani-app-1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1062682923491:android:e848e80dcad7e10783d0d6",
+        "android_client_info": {
+          "package_name": "com.example.flutter_cc206_masagani"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDB00u-AE_JdC8kS4wFmWC9jtIV4lqsoGI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
