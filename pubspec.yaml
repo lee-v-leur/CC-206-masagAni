@@ -35,6 +35,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   icons_plus: ^4.0.0
+  font_awesome_flutter: ^10.7.0
 
 dev_dependencies:
   flutter_test:
@@ -78,14 +79,14 @@ flutter:
   fonts:
       - family: Gotham
         fonts:
-          - asset: assets/fonts/Gotham Bold.otf
+          - asset: assets/fonts/Gotham/Gotham Bold.otf
             weight: 700
       
       - family: Inter
         fonts:
-          - asset: assets/fonts/static.ttf
+          - asset: assets/fonts/static/Inter_24pt-Regular.ttf
             weight: 400
-            
+
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf
