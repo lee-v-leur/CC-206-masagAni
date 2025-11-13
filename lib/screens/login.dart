@@ -19,6 +19,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'profile.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -27,7 +28,8 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailCtrl = TextEditingController();
   final TextEditingController _passCtrl = TextEditingController();
@@ -47,8 +49,14 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
       duration: const Duration(milliseconds: 650),
     );
 
-    final curve = CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic);
-    _slideAnim = Tween<Offset>(begin: const Offset(0, 0.12), end: Offset.zero).animate(curve);
+    final curve = CurvedAnimation(
+      parent: _animController,
+      curve: Curves.easeOutCubic,
+    );
+    _slideAnim = Tween<Offset>(
+      begin: const Offset(0, 0.12),
+      end: Offset.zero,
+    ).animate(curve);
     _fadeAnim = Tween<double>(begin: 0.0, end: 1.0).animate(curve);
 
     // Start animation shortly after build for nicer effect
@@ -77,18 +85,18 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   String? _validatePassword(String? v) {
     if (v == null || v.isEmpty) return 'Please enter password';
     if (v.length < 8) return 'Password must be at least 8 characters';
-    if (!RegExp(r'[A-Z]').hasMatch(v)) return 'Include at least one uppercase letter';
+    if (!RegExp(r'[A-Z]').hasMatch(v))
+      return 'Include at least one uppercase letter';
     if (!RegExp(r'\d').hasMatch(v)) return 'Include at least one number';
     return null;
   }
 
   void _submit() {
-    if (_formKey.currentState?.validate() ?? false) {
-      // TODO: connect with real auth
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Logging in...')),
-      );
-    }
+    // DEBUG / DEV: bypass real auth and navigate directly into the app.
+    // This lets you work on interior screens while auth is not implemented.
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const ProfileScreen()));
   }
 
   // Utility to compute responsive widths
@@ -137,7 +145,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     final double buttonWidth = _computeButtonWidth(deviceWidth);
 
     // Text scale factor for accessibility / small screens
-    final double textScale = MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.2);
+    final double textScale = MediaQuery.of(
+      context,
+    ).textScaleFactor.clamp(1.0, 1.2);
 
     return Scaffold(
       // No appbar; back button will be placed in safe area
@@ -204,7 +214,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         opacity: _fadeAnim,
                         child: Column(
                           children: [
-                            // Email field 
+                            // Email field
                             SizedBox(
                               width: fieldWidth,
                               height: 50,
@@ -226,14 +236,22 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                   ),
                                   filled: true,
                                   fillColor: Colors.white,
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(5),
-                                    borderSide: const BorderSide(color: strokeGreen),
+                                    borderSide: const BorderSide(
+                                      color: strokeGreen,
+                                    ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(5),
-                                    borderSide: const BorderSide(color: primaryGreen, width: 2),
+                                    borderSide: const BorderSide(
+                                      color: primaryGreen,
+                                      width: 2,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -263,21 +281,32 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                   ),
                                   filled: true,
                                   fillColor: Colors.white,
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(5),
-                                    borderSide: const BorderSide(color: strokeGreen),
+                                    borderSide: const BorderSide(
+                                      color: strokeGreen,
+                                    ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(5),
-                                    borderSide: const BorderSide(color: primaryGreen, width: 2),
+                                    borderSide: const BorderSide(
+                                      color: primaryGreen,
+                                      width: 2,
+                                    ),
                                   ),
                                   suffixIcon: IconButton(
                                     icon: Icon(
-                                      _obscure ? Icons.visibility_off : Icons.visibility,
+                                      _obscure
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
                                       color: Colors.grey[700],
                                     ),
-                                    onPressed: () => setState(() => _obscure = !_obscure),
+                                    onPressed: () =>
+                                        setState(() => _obscure = !_obscure),
                                   ),
                                 ),
                               ),
@@ -299,7 +328,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 ),
                                 child: const Text(
                                   'Login',
-                                  style: TextStyle(fontSize: 16, color: Colors.white),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),
@@ -411,7 +443,8 @@ class _HoverTapScale extends StatefulWidget {
   State<_HoverTapScale> createState() => _HoverTapScaleState();
 }
 
-class _HoverTapScaleState extends State<_HoverTapScale> with SingleTickerProviderStateMixin {
+class _HoverTapScaleState extends State<_HoverTapScale>
+    with SingleTickerProviderStateMixin {
   double _scale = 1.0;
   bool _hovering = false;
 
@@ -452,7 +485,10 @@ class _HoverTapScaleState extends State<_HoverTapScale> with SingleTickerProvide
     );
 
     // Only use MouseRegion hover effects when running on web or desktop
-    if (kIsWeb || Theme.of(context).platform == TargetPlatform.macOS || Theme.of(context).platform == TargetPlatform.windows || Theme.of(context).platform == TargetPlatform.linux) {
+    if (kIsWeb ||
+        Theme.of(context).platform == TargetPlatform.macOS ||
+        Theme.of(context).platform == TargetPlatform.windows ||
+        Theme.of(context).platform == TargetPlatform.linux) {
       return MouseRegion(
         onEnter: (_) => _onEnter(true),
         onExit: (_) => _onEnter(false),
