@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'welcome_screen.dart';
+import 'edit_profile.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -25,6 +27,69 @@ class ProfileScreen extends StatelessWidget {
                       // Use the new landscape header image (drop this file into assets/images)
                       'assets/images/header_streak.png',
                       fit: BoxFit.cover,
+                    ),
+                  ),
+                  // Menu button (left) and Logout (right) placed over header
+                  Positioned(
+                    left: 12,
+                    top: 12,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: IconButton(
+                        icon: const Icon(Icons.menu, color: Colors.white),
+                        tooltip: 'Menu',
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Menu tapped')),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: 12,
+                    top: 12,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: TextButton.icon(
+                        icon: const Icon(Icons.logout, color: Colors.white),
+                        label: const Text(
+                          'Log out',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onPressed: () async {
+                          final doLogout = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('Confirm logout'),
+                              content: const Text(
+                                'Are you sure you want to log out?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(ctx).pop(false),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.of(ctx).pop(true),
+                                  child: const Text('Log out'),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (doLogout == true) {
+                            // For development: navigate back to WelcomeScreen and
+                            // remove all previous routes so user cannot go back.
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    const WelcomeScreen(title: 'masagAni'),
+                              ),
+                              (route) => false,
+                            );
+                          }
+                        },
+                      ),
                     ),
                   ),
                   // (avatar moved out of the header Stack so it sits
@@ -66,8 +131,8 @@ class ProfileScreen extends StatelessWidget {
 
               // Name and Edit
               Column(
-                children: const [
-                  Text(
+                children: [
+                  const Text(
                     'Alejandro Villanueva',
                     style: TextStyle(
                       fontFamily: 'Gotham',
@@ -76,10 +141,26 @@ class ProfileScreen extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  SizedBox(height: 6),
-                  Text(
-                    '✎ Edit Profile',
-                    style: TextStyle(fontSize: 13, color: Colors.grey),
+                  const SizedBox(height: 6),
+                  // Make Edit Profile clickable to open the edit page
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const EditProfileScreen(),
+                        ),
+                      );
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(0, 0),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      alignment: Alignment.center,
+                    ),
+                    child: const Text(
+                      '✎ Edit Profile',
+                      style: TextStyle(fontSize: 13, color: Colors.grey),
+                    ),
                   ),
                 ],
               ),
@@ -116,11 +197,13 @@ class ProfileScreen extends StatelessWidget {
                           CircleAvatar(
                             radius: 64,
                             backgroundColor: Colors.white,
-                            child: Image.asset(
-                              // Cow avatar for Paddy (drop this file into assets/images)
-                              'assets/images/paddy_avatar.png',
-                              width: 112,
-                              height: 112,
+                            child: ClipOval(
+                              child: Image.asset(
+                                'assets/images/paddy_avatar.png',
+                                fit: BoxFit.cover, // Add this
+                                width: 128, // Should be radius * 2 (64*2 = 128)
+                                height: 128,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -143,17 +226,33 @@ class ProfileScreen extends StatelessWidget {
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
-                                '153',
-                                style: TextStyle(
-                                  fontSize: 36,
-                                  color: primaryGreen,
-                                  fontWeight: FontWeight.w800,
-                                ),
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  // Small left padding before the number
+                                  const SizedBox(width: 8),
+                                  const SizedBox(width: 2),
+                                  Text(
+                                    '153',
+                                    style: const TextStyle(
+                                      fontSize: 36,
+                                      color: primaryGreen,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                  // Grain icon placed after the number (to the right of the '3')
+                                  const SizedBox(width: 6),
+                                  Image.asset(
+                                    'assets/images/grain_streak.png',
+                                    width: 22,
+                                    height: 22,
+                                    fit: BoxFit.contain,
+                                  ),
+                                ],
                               ),
-                              SizedBox(height: 4),
-                              Text(
+                              const SizedBox(height: 4),
+                              const Text(
                                 'Streak Days',
                                 style: TextStyle(color: Colors.black54),
                               ),
@@ -185,32 +284,35 @@ class ProfileScreen extends StatelessWidget {
                       Column(
                         children: [
                           // Dots and leaves row
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: List.generate(5, (index) {
-                              final reached =
-                                  index <
-                                  4; // show 4 greens reached, last is empty
-                              return Column(
-                                children: [
-                                  Icon(
-                                    Icons.eco,
-                                    color: reached
-                                        ? primaryGreen
-                                        : Colors.amber.shade200,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
+                          // Replace the individual leaf icons with a single
+                          // grain streak image that spans the five positions,
+                          // then show the corresponding numbers 150..154 aligned
+                          // beneath it using spaceBetween.
+                          Column(
+                            children: [
+                              // Full-width grain streak graphic
+                              Image.asset(
+                                'assets/images/streak_day_count_v2.png',
+                                width: double.infinity,
+                                height: 24,
+                                fit: BoxFit.fill,
+                              ),
+                              const SizedBox(height: 6),
+                              // Numbers aligned under the streak graphic
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: List.generate(5, (index) {
+                                  return Text(
                                     '${150 + index}',
                                     style: const TextStyle(
                                       fontSize: 11,
                                       color: Colors.black54,
                                     ),
-                                  ),
-                                ],
-                              );
-                            }),
+                                  );
+                                }),
+                              ),
+                            ],
                           ),
 
                           const SizedBox(height: 18),

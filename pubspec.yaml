@@ -55,15 +55,12 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-
-
   assets:
     - assets/images/welcomepage.png
     - assets/images/header_streak.png
@@ -71,6 +68,8 @@ flutter:
     - assets/images/loading.jpg
     - assets/images/masagani.png
     - assets/images/paddy_avatar.png
+    - assets/images/grain_streak.png
+    - assets/images/streak_day_count.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -84,15 +83,15 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-      - family: Gotham
-        fonts:
-          - asset: assets/fonts/Gotham/Gotham Bold.otf
-            weight: 700
-      
-      - family: Inter
-        fonts:
-          - asset: assets/fonts/static/Inter_24pt-Regular.ttf
-            weight: 400
+    - family: Gotham
+      fonts:
+        - asset: assets/fonts/Gotham/Gotham Bold.otf
+          weight: 700
+
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/static/Inter_24pt-Regular.ttf
+          weight: 400
 
   #   - family: Schyler
   #     fonts:
