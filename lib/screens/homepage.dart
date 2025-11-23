@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'plot_manager.dart';
 import 'profile.dart';
 import 'discover.dart';
+import 'plot_details.dart';
+import 'article.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -139,9 +141,11 @@ class _HomePageState extends State<HomePage> {
                                 setState(() => _currentPage = idx),
                             itemBuilder: (context, index) {
                               final card = _overlayCards[index];
+                              final plotTitle = card['title'] ?? 'Plot';
+                              final plotAge = card['subtitle'] ?? '';
                               return Container(
                                 margin: const EdgeInsets.symmetric(
-                                  horizontal: 6,
+                                  horizontal: 5,
                                 ),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15),
@@ -250,7 +254,19 @@ class _HomePageState extends State<HomePage> {
                                                   ),
                                                 ),
                                                 ElevatedButton(
-                                                  onPressed: () {},
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) => PlotDetailsPage(
+                                                          title: plotTitle,
+                                                          variety: 'NSIC Rc 222',
+                                                          age: plotAge,
+                                                          healthy: true,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
                                                   style: ElevatedButton.styleFrom(
                                                     backgroundColor: primaryGreen,
                                                     shape: RoundedRectangleBorder(
@@ -544,40 +560,72 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _infoCard(String title, String asset) {
-    return Container(
-      width: 180,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 6),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(12),
-              ),
-              child: Image.asset(
-                asset,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) =>
-                    Container(color: Colors.green[50]),
-              ),
+    // Map card titles to full article titles
+    String fullTitle;
+    String author;
+    String date;
+    
+    if (title.contains('Yellowing')) {
+      fullTitle = 'Is It Just Heat Stress or Rice Yellowing Syndrome?';
+      author = 'Keung, H.';
+      date = 'December 1, 2022';
+    } else {
+      fullTitle = 'Simple Ways to Boost Rice Immunity Naturally';
+      author = 'McKinley, A.';
+      date = 'January 27, 2014';
+    }
+    
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ArticleScreen(
+              image: asset,
+              title: fullTitle,
+              author: author,
+              date: date,
+              isFavorited: false,
+              onToggleFavorite: () {},
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              title,
-              style: const TextStyle(fontSize: 12, color: Colors.black87),
+        );
+      },
+      child: Container(
+        width: 180,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 6),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(12),
+                ),
+                child: Image.asset(
+                  asset,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) =>
+                      Container(color: Colors.green[50]),
+                ),
+              ),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                title,
+                style: const TextStyle(fontSize: 12, color: Colors.black87),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
