@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'favorites.dart';
 import 'article.dart';
+import 'homepage.dart';
+import 'plot_manager.dart';
+import 'profile.dart';
+import 'welcome_screen.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -14,16 +18,19 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   final PageController _pageController = PageController(viewportFraction: 0.9);
   bool _showFilterOverlay = false;
   final GlobalKey _filterIconKey = GlobalKey();
+
   
   // Filter options
   String _sortBy = 'mostRecent';
   Set<String> _selectedLanguages = {};
   Set<String> _selectedDiseases = {};
+
   
   // Initial filter state
   String _initialSortBy = 'mostRecent';
   Set<String> _initialLanguages = {};
   Set<String> _initialDiseases = {};
+
   
   // Favorited articles tracking
   final Map<String, Map<String, String>> _favoritedArticles = {};
@@ -33,6 +40,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     _pageController.dispose();
     super.dispose();
   }
+
   
   void _toggleFavorite(String title, String image, String author, String date) {
     setState(() {
@@ -47,6 +55,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       }
     });
   }
+
   
   List<Widget> _buildFavoriteCards() {
     return _favoritedArticles.entries.map((entry) {
@@ -60,6 +69,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       );
     }).toList();
   }
+
+  bool get _hasFilterChanges {
+    return _sortBy != _initialSortBy ||
+        !_selectedLanguages.difference(_initialLanguages).isEmpty ||
+        !_initialLanguages.difference(_selectedLanguages).isEmpty ||
+        !_selectedDiseases.difference(_initialDiseases).isEmpty ||
+        !_initialDiseases.difference(_selectedDiseases).isEmpty;
   
   bool get _hasFilterChanges {
     return _sortBy != _initialSortBy ||
@@ -73,6 +89,10 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   Widget build(BuildContext context) {
     const Color backgroundColor = Color(0xFFFEFEF1);
     const Color primaryGreen = Color(0xFF099509);
+
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      drawer: const DiscoverMenuDrawer(),
     
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -80,6 +100,306 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         children: [
           SafeArea(
             child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Top bar with menu icon
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Builder(
+                          builder: (ctx) {
+                            return IconButton(
+                              onPressed: () => Scaffold.of(ctx).openDrawer(),
+                              icon: const Icon(
+                                Icons.menu,
+                                color: primaryGreen,
+                                size: 28,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Discover title with filter icon
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Discover',
+                              style: TextStyle(
+                                color: primaryGreen,
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Your daily dose of agri wisdom.',
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                        GestureDetector(
+                          key: _filterIconKey,
+                          onTap: () {
+                            setState(() {
+                              _showFilterOverlay = !_showFilterOverlay;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            child: const Icon(
+                              Icons.tune,
+                              color: primaryGreen,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Favorites section
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Favorites',
+                          style: TextStyle(
+                            color: Color(0xFF8BC34A),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FavoritesScreen(
+                                  favoritedArticles: _favoritedArticles,
+                                  onToggleFavorite: _toggleFavorite,
+                                ),
+                              ),
+                            ).then((_) => setState(() {}));
+                          },
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(0, 0),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: const Text(
+                            'View all',
+                            style: TextStyle(
+                              color: Color(0xFF8BC34A),
+                              fontSize: 12,
+                              decoration: TextDecoration.underline,
+                              decorationColor: Color(0xFF8BC34A),
+                              decorationThickness: 1,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Horizontal scrollable favorites
+                  SizedBox(
+                    height: 200,
+                    child: _favoritedArticles.isEmpty
+                        ? Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(24.0),
+                              child: Text(
+                                'No favorites yet. Tap the bookmark icon on articles to add them here!',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          )
+                        : PageView(
+                            controller: _pageController,
+                            padEnds: false,
+                            onPageChanged: (index) {
+                              setState(() {
+                                _currentPage = index;
+                              });
+                            },
+                            children: _buildFavoriteCards(),
+                          ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Dots indicator
+                  if (_favoritedArticles.isNotEmpty)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        _favoritedArticles.length,
+                        (index) => Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: _currentPage == index
+                                ? const Color(0xFF8BC34A)
+                                : Colors.grey[400],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  const SizedBox(height: 24),
+
+                  // For You section
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    child: Text(
+                      'For You',
+                      style: TextStyle(
+                        color: Color(0xFF8BC34A),
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // For You list
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      children: [
+                        _ArticleCard(
+                          image: 'assets/images/educ/rice_immunity.jpg',
+                          title: 'Simple Ways to Boost Rice Immunity Naturally',
+                          author: 'McKinley, A.',
+                          date: 'January 27, 2014',
+                          isFavorited: _favoritedArticles.containsKey(
+                            'Simple Ways to Boost Rice Immunity Naturally',
+                          ),
+                          onToggleFavorite: () => _toggleFavorite(
+                            'Simple Ways to Boost Rice Immunity Naturally',
+                            'assets/images/educ/rice_immunity.jpg',
+                            'McKinley, A.',
+                            'January 27, 2014',
+                          ),
+                          favoritedArticles: _favoritedArticles,
+                          onToggleFavoriteGlobal: _toggleFavorite,
+                        ),
+                        const SizedBox(height: 16),
+                        _ArticleCard(
+                          image: 'assets/images/educ/soil_care.jpg',
+                          title: 'Proper Soil Care for Stronger Rice Plants',
+                          author: 'Junior, Q.',
+                          date: 'April 16, 2011',
+                          isFavorited: _favoritedArticles.containsKey(
+                            'Proper Soil Care for Stronger Rice Plants',
+                          ),
+                          onToggleFavorite: () => _toggleFavorite(
+                            'Proper Soil Care for Stronger Rice Plants',
+                            'assets/images/educ/soil_care.jpg',
+                            'Junior, Q.',
+                            'April 16, 2011',
+                          ),
+                          favoritedArticles: _favoritedArticles,
+                          onToggleFavoriteGlobal: _toggleFavorite,
+                        ),
+                        const SizedBox(height: 16),
+                        _ArticleCard(
+                          image: 'assets/images/educ/sheath_blight.jpg',
+                          title:
+                              'Hidden Under the Leaves: Detecting Sheath Blight Early',
+                          author: 'Campbell, J.',
+                          date: 'February 22, 2015',
+                          isFavorited: _favoritedArticles.containsKey(
+                            'Hidden Under the Leaves: Detecting Sheath Blight Early',
+                          ),
+                          onToggleFavorite: () => _toggleFavorite(
+                            'Hidden Under the Leaves: Detecting Sheath Blight Early',
+                            'assets/images/educ/sheath_blight.jpg',
+                            'Campbell, J.',
+                            'February 22, 2015',
+                          ),
+                          favoritedArticles: _favoritedArticles,
+                          onToggleFavoriteGlobal: _toggleFavorite,
+                        ),
+                        const SizedBox(height: 16),
+                        _ArticleCard(
+                          image: 'assets/images/educ/heat_stress.jpg',
+                          title:
+                              'Is It Just Heat Stress or Rice Yellowing Syndrome?',
+                          author: 'Keung, H.',
+                          date: 'December 1, 2022',
+                          isFavorited: _favoritedArticles.containsKey(
+                            'Is It Just Heat Stress or Rice Yellowing Syndrome?',
+                          ),
+                          onToggleFavorite: () => _toggleFavorite(
+                            'Is It Just Heat Stress or Rice Yellowing Syndrome?',
+                            'assets/images/educ/heat_stress.jpg',
+                            'Keung, H.',
+                            'December 1, 2022',
+                          ),
+                          favoritedArticles: _favoritedArticles,
+                          onToggleFavoriteGlobal: _toggleFavorite,
+                        ),
+                        const SizedBox(height: 16),
+                        _ArticleCard(
+                          image: 'assets/images/educ/brown_spot.jpg',
+                          title:
+                              'Spotting Brown Spot Disease Before It Spreads',
+                          author: 'Rodriguez, L.',
+                          date: 'March 8, 2018',
+                          isFavorited: _favoritedArticles.containsKey(
+                            'Spotting Brown Spot Disease Before It Spreads',
+                          ),
+                          onToggleFavorite: () => _toggleFavorite(
+                            'Spotting Brown Spot Disease Before It Spreads',
+                            'assets/images/educ/brown_spot.jpg',
+                            'Rodriguez, L.',
+                            'March 8, 2018',
+                          ),
+                          favoritedArticles: _favoritedArticles,
+                          onToggleFavoriteGlobal: _toggleFavorite,
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -373,6 +693,49 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   // Sort by section
+                                  _buildFilterSection('Sort By', [
+                                    _buildRadioOption(
+                                      'Most Recent',
+                                      'mostRecent',
+                                    ),
+                                    _buildRadioOption('Oldest', 'oldest'),
+                                  ]),
+
+                                  const Divider(
+                                    height: 1,
+                                    color: Color(0xFFE0E0E0),
+                                  ),
+
+                                  // Language section
+                                  _buildFilterSection('Language', [
+                                    _buildCheckboxOption('English', 'english'),
+                                    _buildCheckboxOption(
+                                      'Filipino',
+                                      'filipino',
+                                    ),
+                                  ]),
+
+                                  const Divider(
+                                    height: 1,
+                                    color: Color(0xFFE0E0E0),
+                                  ),
+
+                                  // Disease section
+                                  _buildFilterSection('Disease', [
+                                    _buildCheckboxOption(
+                                      'Rice Yellowing Syndrome',
+                                      'yellowing',
+                                    ),
+                                    _buildCheckboxOption(
+                                      'Sheath Blight',
+                                      'sheath',
+                                    ),
+                                    _buildCheckboxOption(
+                                      'Brown Spot Disease',
+                                      'brownspot',
+                                    ),
+                                  ]),
+
                                   _buildFilterSection(
                                     'Sort By',
                                     [
@@ -410,6 +773,24 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                     child: SizedBox(
                                       width: double.infinity,
                                       child: ElevatedButton(
+                                        onPressed: _hasFilterChanges
+                                            ? () {
+                                                setState(() {
+                                                  _showFilterOverlay = false;
+                                                  // Save current state as initial
+                                                  _initialSortBy = _sortBy;
+                                                  _initialLanguages = Set.from(
+                                                    _selectedLanguages,
+                                                  );
+                                                  _initialDiseases = Set.from(
+                                                    _selectedDiseases,
+                                                  );
+                                                });
+                                                // TODO: Apply filters to the content
+                                              }
+                                            : null,
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: _hasFilterChanges
                                         onPressed: _hasFilterChanges ? () {
                                           setState(() {
                                             _showFilterOverlay = false;
@@ -427,6 +808,25 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                           foregroundColor: _hasFilterChanges
                                               ? const Color(0xFF005300)
                                               : const Color(0xFF424242),
+                                          disabledBackgroundColor: const Color(
+                                            0xFFBDBDBD,
+                                          ),
+                                          disabledForegroundColor: const Color(
+                                            0xFF424242,
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
+                                            side: _hasFilterChanges
+                                                ? BorderSide.none
+                                                : const BorderSide(
+                                                    color: Color(0xFF757575),
+                                                    width: 1,
+                                                  ),
                                           disabledBackgroundColor: const Color(0xFFBDBDBD),
                                           disabledForegroundColor: const Color(0xFF424242),
                                           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -462,6 +862,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       ),
     );
   }
+
   
   Widget _buildFilterSection(String title, List<Widget> children) {
     return Padding(
@@ -483,6 +884,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       ),
     );
   }
+
   
   Widget _buildRadioOption(String label, String value) {
     return GestureDetector(
@@ -496,6 +898,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         child: Row(
           children: [
             Icon(
+              _sortBy == value
+                  ? Icons.radio_button_checked
+                  : Icons.radio_button_unchecked,
+              size: 18,
+              color: _sortBy == value
+                  ? const Color(0xFF099509)
+                  : Colors.grey[400],
               _sortBy == value ? Icons.radio_button_checked : Icons.radio_button_unchecked,
               size: 18,
               color: _sortBy == value ? const Color(0xFF099509) : Colors.grey[400],
@@ -504,6 +913,21 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             Expanded(
               child: Text(
                 label,
+                style: TextStyle(fontSize: 13, color: Colors.black87),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCheckboxOption(String label, String value) {
+    final isLanguage = value == 'english' || value == 'filipino';
+    final isSelected = isLanguage
+        ? _selectedLanguages.contains(value)
+        : _selectedDiseases.contains(value);
+
                 style: TextStyle(
                   fontSize: 13,
                   color: Colors.black87,
@@ -553,6 +977,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             Expanded(
               child: Text(
                 label,
+                style: TextStyle(fontSize: 13, color: Colors.black87),
                 style: TextStyle(
                   fontSize: 13,
                   color: Colors.black87,
@@ -597,6 +1022,8 @@ class _FavoriteCard extends StatelessWidget {
               author: author,
               date: date,
               isFavorited: isFav,
+              onToggleFavorite: () =>
+                  onToggleFavoriteGlobal(title, image, author, date),
               onToggleFavorite: () => onToggleFavoriteGlobal(title, image, author, date),
               favoritedArticles: favoritedArticles,
               onToggleFavoriteGlobal: onToggleFavoriteGlobal,
@@ -619,6 +1046,54 @@ class _FavoriteCard extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset(
+                image,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  color: Colors.green[200],
+                  child: const Icon(Icons.image, size: 64, color: Colors.white),
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '$author • $date',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        height: 1.3,
+                      ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           fit: StackFit.expand,
           children: [
             Image.asset(
@@ -731,6 +1206,259 @@ class _ArticleCard extends StatelessWidget {
           ],
         ),
         child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                bottomLeft: Radius.circular(12),
+              ),
+              child: Image.asset(
+                image,
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  width: 100,
+                  height: 100,
+                  color: Colors.green[200],
+                  child: const Icon(Icons.image, color: Colors.white),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                        height: 1.3,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '$author  •  $date',
+                      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: GestureDetector(
+                onTap: onToggleFavorite,
+                child: Icon(
+                  isFavorited ? Icons.bookmark : Icons.bookmark_border,
+                  color: Colors.green[700],
+                  size: 24,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Drawer used by Discover screen (styling and behavior mirror other screens)
+class DiscoverMenuDrawer extends StatefulWidget {
+  const DiscoverMenuDrawer({Key? key}) : super(key: key);
+
+  @override
+  State<DiscoverMenuDrawer> createState() => _DiscoverMenuDrawerState();
+}
+
+class _DiscoverMenuDrawerState extends State<DiscoverMenuDrawer> {
+  String _selected = 'Discover';
+
+  void _select(String label) {
+    setState(() {
+      _selected = label;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: Container(
+        color: const Color(0xFFFFFFD6),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8.0, bottom: 18),
+                    child: Image.asset(
+                      'assets/images/masagani_logoname.png',
+                      height: 60,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                _DiscoverDrawerHoverTile(
+                  label: 'Home',
+                  selected: _selected == 'Home',
+                  onTap: () {
+                    _select('Home');
+                    Navigator.of(context).pop();
+                    Navigator.of(
+                      context,
+                    ).push(MaterialPageRoute(builder: (_) => const HomePage()));
+                  },
+                ),
+                _DiscoverDrawerHoverTile(
+                  label: 'Plots',
+                  selected: _selected == 'Plots',
+                  onTap: () {
+                    _select('Plots');
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const PlotManagerPage(),
+                      ),
+                    );
+                  },
+                ),
+                _DiscoverDrawerHoverTile(
+                  label: 'Discover',
+                  selected: _selected == 'Discover',
+                  onTap: () {
+                    _select('Discover');
+                    Navigator.of(context).pop();
+                  },
+                ),
+                _DiscoverDrawerHoverTile(
+                  label: 'Profile',
+                  selected: _selected == 'Profile',
+                  onTap: () {
+                    _select('Profile');
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                    );
+                  },
+                ),
+                const Spacer(),
+                const Divider(),
+                _DiscoverDrawerHoverTile(
+                  label: 'Log out',
+                  leading: const Icon(Icons.logout, color: Color(0xFF0B8A12)),
+                  onTap: () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (_) => const WelcomeScreen(title: 'masagAni'),
+                      ),
+                      (route) => false,
+                    );
+                  },
+                  isLogout: true,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DiscoverDrawerHoverTile extends StatefulWidget {
+  final String label;
+  final Widget? leading;
+  final VoidCallback? onTap;
+  final bool selected;
+  final bool isLogout;
+
+  const _DiscoverDrawerHoverTile({
+    Key? key,
+    required this.label,
+    this.leading,
+    this.onTap,
+    this.selected = false,
+    this.isLogout = false,
+  }) : super(key: key);
+
+  @override
+  State<_DiscoverDrawerHoverTile> createState() =>
+      _DiscoverDrawerHoverTileState();
+}
+
+class _DiscoverDrawerHoverTileState extends State<_DiscoverDrawerHoverTile> {
+  bool _hovering = false;
+  bool _pressing = false;
+
+  void _onEnter(PointerEvent _) => setState(() => _hovering = true);
+  void _onExit(PointerEvent _) => setState(() => _hovering = false);
+
+  @override
+  Widget build(BuildContext context) {
+    const hoverBg = Color(0xFFF9ED96);
+    final bool highlight = widget.selected || _hovering || _pressing;
+
+    return MouseRegion(
+      onEnter: _onEnter,
+      onExit: _onExit,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: (_) => setState(() {
+          _pressing = true;
+          _hovering = false;
+        }),
+        onTapUp: (_) => setState(() => _pressing = false),
+        onTapCancel: () => setState(() => _pressing = false),
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: _pressing
+              ? Duration.zero
+              : const Duration(milliseconds: 20),
+          curve: Curves.easeOut,
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          decoration: BoxDecoration(
+            color: highlight ? hoverBg : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              if (widget.leading != null) ...[
+                widget.leading!,
+                const SizedBox(width: 10),
+              ],
+              Expanded(
+                child: AnimatedDefaultTextStyle(
+                  duration: _pressing
+                      ? Duration.zero
+                      : const Duration(milliseconds: 160),
+                  style: TextStyle(
+                    fontFamily: 'Gotham',
+                    fontSize: highlight ? 20 : 18,
+                    fontWeight: widget.selected
+                        ? FontWeight.w300
+                        : FontWeight.w500,
+                    color: const Color(0xFF0B8A12),
+                  ),
+                  child: Text(widget.label),
+                ),
+              ),
+              if (widget.isLogout)
+                const SizedBox.shrink()
+              else
+                const SizedBox.shrink(),
+            ],
+          ),
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.only(

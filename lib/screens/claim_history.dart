@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ClaimHistoryScreen extends StatelessWidget {
   const ClaimHistoryScreen({super.key});
@@ -7,6 +9,9 @@ class ClaimHistoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     const Color backgroundColor = Color(0xFFFEFEF1);
     const Color primaryGreen = Color(0xFF099509);
+
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+
     
     // TODO: Replace with actual redeemed vouchers from database
     final List<Map<String, dynamic>> redeemedVouchers = [];
@@ -34,6 +39,7 @@ class ClaimHistoryScreen extends StatelessWidget {
                 ],
               ),
             ),
+
             
             // Claim History title
             const Padding(
@@ -48,6 +54,12 @@ class ClaimHistoryScreen extends StatelessWidget {
                 ),
               ),
             ),
+
+            const SizedBox(height: 24),
+
+            // Content: show user's claim history (created by trusted server/function)
+            Expanded(
+              child: uid == null
             
             const SizedBox(height: 24),
             
@@ -66,6 +78,12 @@ class ClaimHistoryScreen extends StatelessWidget {
                               color: Colors.grey[400],
                             ),
                             const SizedBox(height: 16),
+                            const Text(
+                              'Not signed in',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey,
                             Text(
                               'No Redeemed Vouchers Yet',
                               style: TextStyle(
@@ -76,6 +94,11 @@ class ClaimHistoryScreen extends StatelessWidget {
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 8),
+                            const Text(
+                              'Sign in to view your redeemed vouchers.',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
                             Text(
                               'You haven\'t redeemed any vouchers yet. Start earning Agri Points and redeem your first reward!',
                               style: TextStyle(
@@ -89,6 +112,126 @@ class ClaimHistoryScreen extends StatelessWidget {
                         ),
                       ),
                     )
+                  : StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(uid)
+                          .collection('claims')
+                          .orderBy('redeemedAt', descending: true)
+                          .snapshots(includeMetadataChanges: true),
+                      builder: (context, snap) {
+                        if (snap.connectionState == ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        if (!snap.hasData || snap.data!.docs.isEmpty) {
+                          // Fallback: show rewards where used == true
+                          return StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(uid)
+                                .collection('rewards')
+                                .where('used', isEqualTo: true)
+                                .orderBy('createdAt', descending: true)
+                                .snapshots(includeMetadataChanges: true),
+                            builder: (context, s2) {
+                              if (s2.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                              if (!s2.hasData || s2.data!.docs.isEmpty) {
+                                return Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(32),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.history,
+                                          size: 80,
+                                          color: Colors.grey[400],
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          'No Redeemed Vouchers Yet',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.grey[700],
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          'You haven\'t redeemed any vouchers yet. Start earning Agri Points and redeem your first reward!',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey[600],
+                                            height: 1.5,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              final docs = s2.data!.docs;
+                              return ListView.separated(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                                itemCount: docs.length,
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(height: 16),
+                                itemBuilder: (context, index) {
+                                  final d =
+                                      docs[index].data()
+                                          as Map<String, dynamic>;
+                                  final redeemedAt =
+                                      (d['redeemedAt'] as Timestamp?)?.toDate();
+                                  return _RedeemedVoucherCard(
+                                    title: d['title'] ?? 'Reward',
+                                    description: d['title'] ?? '',
+                                    descriptionSubtext:
+                                        d['descriptionSubtext'] as String?,
+                                    points: (d['points'] ?? 0) as int,
+                                    redeemedDate: redeemedAt != null
+                                        ? redeemedAt.toLocal().toString()
+                                        : '',
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        }
+
+                        final docs = snap.data!.docs;
+                        return ListView.separated(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: docs.length,
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 16),
+                          itemBuilder: (context, index) {
+                            final d =
+                                docs[index].data() as Map<String, dynamic>;
+                            final redeemedAt = (d['redeemedAt'] as Timestamp?)
+                                ?.toDate();
+                            return _RedeemedVoucherCard(
+                              title: d['title'] ?? 'Reward',
+                              description: d['title'] ?? '',
+                              descriptionSubtext: d['description'] as String?,
+                              points: (d['points'] ?? 0) as int,
+                              redeemedDate: redeemedAt != null
+                                  ? redeemedAt.toLocal().toString()
+                                  : '',
+                            );
+                          },
                   : ListView.separated(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       itemCount: redeemedVouchers.length,
@@ -130,11 +273,13 @@ class _RedeemedVoucherCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const Color cardBorder = Color(0xFFE8D78C);
+
     
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFFEFEF1),
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: cardBorder, width: 2),
         border: Border.all(
           color: cardBorder,
           width: 2,
@@ -165,6 +310,9 @@ class _RedeemedVoucherCard extends StatelessWidget {
               size: 32,
             ),
           ),
+
+          const SizedBox(width: 12),
+
           
           const SizedBox(width: 12),
           
@@ -198,6 +346,9 @@ class _RedeemedVoucherCard extends StatelessWidget {
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 6),
+
                 
                 const SizedBox(height: 6),
                 
@@ -210,6 +361,7 @@ class _RedeemedVoucherCard extends StatelessWidget {
                     height: 1.4,
                   ),
                 ),
+
                 
                 if (descriptionSubtext != null) ...[
                   Text(
@@ -222,8 +374,10 @@ class _RedeemedVoucherCard extends StatelessWidget {
                     ),
                   ),
                 ],
-                
+
                 const SizedBox(height: 8),
+
+               
                 
                 // Redeemed date
                 Text(
@@ -234,6 +388,7 @@ class _RedeemedVoucherCard extends StatelessWidget {
                     fontStyle: FontStyle.italic,
                   ),
                 ),
+
                 
                 const SizedBox(height: 12),
                 

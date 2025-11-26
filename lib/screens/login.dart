@@ -16,8 +16,11 @@
 // Make sure you have font_awesome_flutter in pubspec and fonts registered as you described.
 
 import 'dart:async';
-import 'package:flutter/foundation.dart' show kIsWeb;
+// foundation import removed (no web hover behavior)
 import 'package:flutter/material.dart';
+// removed social icon dependency (social-login UI removed)
+import 'loading.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,6 +41,7 @@ class _LoginScreenState extends State<LoginScreen>
   final TextEditingController _emailCtrl = TextEditingController();
   final TextEditingController _passCtrl = TextEditingController();
   bool _obscure = true;
+  bool _loading = false;
 
   // Animations
   late final AnimationController _animController;
@@ -110,11 +114,45 @@ class _LoginScreenState extends State<LoginScreen>
         password: password,
       );
 
+      // Signed in successfully
       // Debugging info
       // ignore: avoid_print
       print(
         'Signed in: uid=${userCred.user?.uid}, email=${userCred.user?.email}',
       );
+      if (!mounted) return;
+
+      // derive a first name to show in loading screen (displayName or email prefix)
+      final firstName =
+          userCred.user?.displayName ??
+          (userCred.user?.email?.split('@').first ?? '');
+
+      // Navigate to LoadingScreen for 3 seconds, then LoadingScreen will route to HomePage
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) =>
+                LoadingScreen(firstName: firstName, durationMillis: 3000),
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      final code = e.code;
+      final message = e.message ?? 'Authentication error';
+      if (mounted) {
+        if (code == 'user-not-found') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No account found for that email. Please sign up.'),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Login error [$code]: $message')),
+          );
+        }
+      }
+    } catch (e) {
 
       // Fetch user's first name from Firestore
       String firstName = 'User';
@@ -168,6 +206,7 @@ class _LoginScreenState extends State<LoginScreen>
     return 300;
   }
 
+  // Social-login removed; no helper needed.
   // Button width helper removed (not used while auth is bypassed).
 
   // Social icon builder with hover & tap scale animation
@@ -376,7 +415,7 @@ class _LoginScreenState extends State<LoginScreen>
                               width: fieldWidth,
                               height: 50,
                               child: ElevatedButton(
-                                onPressed: _submit,
+                                onPressed: _loading ? null : _submit,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: primaryGreen,
                                   shape: RoundedRectangleBorder(
@@ -396,6 +435,13 @@ class _LoginScreenState extends State<LoginScreen>
                                         ),
                                       )
                                     : const Text(
+                                        'LOGIN',
+                                        style: TextStyle(
+                                          fontFamily: 'Gotham',
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.white,
+                                          letterSpacing: 1.2,
                                         'Login',
                                         style: TextStyle(
                                           fontSize: 16,
@@ -410,76 +456,6 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
 
                     const Spacer(),
-
-                    // "Or login with" label
-                    Text(
-                      'Or login with',
-                      style: const TextStyle(
-                        fontFamily: 'Inter',
-                        color: hintGray,
-                        fontSize: 13,
-                      ),
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    // Social icons row (A: Google, B: Facebook, C: Apple, D: GitHub, E: Twitter)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Google (red-ish colored icon)
-                        _buildSocialIcon(
-                          icon: FontAwesomeIcons.google,
-                          iconColor: const Color(0xFFDB4437),
-                          onTap: () {
-                            // TODO: implement Google auth
-                          },
-                        ),
-                        const SizedBox(width: 12),
-
-                        // Facebook (facebook blue)
-                        _buildSocialIcon(
-                          icon: FontAwesomeIcons.facebookF,
-                          iconColor: const Color(0xFF1877F2),
-                          onTap: () {
-                            // TODO: implement Facebook auth
-                          },
-                        ),
-                        const SizedBox(width: 12),
-
-                        // Apple (black)
-                        _buildSocialIcon(
-                          icon: FontAwesomeIcons.apple,
-                          iconColor: Colors.black,
-                          onTap: () {
-                            // TODO: implement Apple auth
-                          },
-                        ),
-                        const SizedBox(width: 12),
-
-                        // GitHub (black)
-                        _buildSocialIcon(
-                          icon: FontAwesomeIcons.github,
-                          iconColor: Colors.black,
-                          onTap: () {
-                            // TODO: implement GitHub auth
-                          },
-                        ),
-
-                        const SizedBox(width: 12),
-
-                        // Twitter/X (twitter blue)
-                        _buildSocialIcon(
-                          icon: FontAwesomeIcons.twitter,
-                          iconColor: const Color(0xFF1DA1F2),
-                          onTap: () {
-                            // TODO: implement Twitter auth
-                          },
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 30),
                   ],
                 ),
               ),
@@ -493,6 +469,7 @@ class _LoginScreenState extends State<LoginScreen>
 
 /// Widget that provides hover (for web) and tap scale animation.
 /// It scales down slightly on tap, and grows a bit on hover (web).
+// Hover/tap animation removed with social-login UI.
 class _HoverTapScale extends StatefulWidget {
   final Widget child;
   final VoidCallback? onTap;

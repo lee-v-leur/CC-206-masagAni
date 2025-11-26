@@ -32,6 +32,17 @@ class _ArticleScreenState extends State<ArticleScreen> {
   @override
   Widget build(BuildContext context) {
     const Color backgroundColor = Color(0xFFFEFEF1);
+
+    // Determine if this article should show symptoms section
+    final bool shouldShowSymptoms =
+        !widget.title.toLowerCase().contains('care') &&
+        !widget.title.toLowerCase().contains('boost') &&
+        !widget.title.toLowerCase().contains('manage');
+
+    // Get related articles based on current article
+    final List<Map<String, String>> relatedArticles = _getRelatedArticles(
+      widget.title,
+    );
     
     // Determine if this article should show symptoms section
     final bool shouldShowSymptoms = !widget.title.toLowerCase().contains('care') && 
@@ -63,6 +74,14 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         width: double.infinity,
                         height: 280,
                         color: Colors.green[200],
+                        child: const Icon(
+                          Icons.image,
+                          size: 64,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+
                         child: const Icon(Icons.image, size: 64, color: Colors.white),
                       ),
                     ),
@@ -120,6 +139,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                     ),
                   ],
                 ),
+
                 
                 // Author info
                 Padding(
@@ -133,6 +153,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                     ),
                   ),
                 ),
+
                 
                 // Article content
                 Container(
@@ -149,6 +170,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         ),
                       ),
                       const SizedBox(height: 24),
+
                       
                       // Symptoms section (only for disease articles)
                       if (shouldShowSymptoms) ...[
@@ -161,6 +183,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                           ),
                         ),
                         const SizedBox(height: 12),
+
                         
                         const Text(
                           'Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper',
@@ -172,6 +195,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         ),
                         const SizedBox(height: 20),
                       ],
+
                       
                       // Image grid
                       Row(
@@ -229,6 +253,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         ],
                       ),
                       const SizedBox(height: 20),
+
                       
                       const Text(
                         'Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.',
@@ -239,6 +264,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         ),
                       ),
                       const SizedBox(height: 32),
+
                       
                       // Related Articles section
                       const Text(
@@ -250,6 +276,15 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
+
+                      // Related articles list
+                      ...relatedArticles.map((article) {
+                        final articleTitle = article['title']!;
+                        final isFav =
+                            widget.favoritedArticles?.containsKey(
+                              articleTitle,
+                            ) ??
+                            false;
                       
                       // Related articles list
                       ...relatedArticles.map((article) {
@@ -263,6 +298,22 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             author: article['author']!,
                             date: article['date']!,
                             isFavorited: isFav,
+                            onToggleFavorite:
+                                widget.onToggleFavoriteGlobal != null
+                                ? () => widget.onToggleFavoriteGlobal!(
+                                    articleTitle,
+                                    article['image']!,
+                                    article['author']!,
+                                    article['date']!,
+                                  )
+                                : () {},
+                            favoritedArticles: widget.favoritedArticles,
+                            onToggleFavoriteGlobal:
+                                widget.onToggleFavoriteGlobal,
+                          ),
+                        );
+                      }).toList(),
+
                             onToggleFavorite: widget.onToggleFavoriteGlobal != null
                                 ? () => widget.onToggleFavoriteGlobal!(
                                       articleTitle,
@@ -284,6 +335,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
               ],
             ),
           ),
+
           
           // Top bar with back and bookmark buttons
           Positioned(
@@ -292,6 +344,10 @@ class _ArticleScreenState extends State<ArticleScreen> {
             right: 0,
             child: SafeArea(
               child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -305,6 +361,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         size: 28,
                       ),
                     ),
+
                     
                     // Action buttons
                     Row(
@@ -320,6 +377,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             padding: EdgeInsets.zero,
                             onPressed: widget.onToggleFavorite,
                             icon: Icon(
+                              widget.isFavorited
+                                  ? Icons.bookmark
+                                  : Icons.bookmark_border,
                               widget.isFavorited ? Icons.bookmark : Icons.bookmark_border,
                               color: Colors.black87,
                               size: 20,
@@ -359,6 +419,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
       ),
     );
   }
+
   
   List<Map<String, String>> _getRelatedArticles(String currentTitle) {
     final allArticles = [
@@ -393,6 +454,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
         'date': 'March 8, 2018',
       },
     ];
+
     
     // Filter out the current article and return up to 3 related articles
     return allArticles
@@ -495,6 +557,7 @@ class _RelatedArticleCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       '$author  •  $date',
+                      style: TextStyle(fontSize: 10, color: Colors.grey[600]),
                       style: TextStyle(
                         fontSize: 10,
                         color: Colors.grey[600],
