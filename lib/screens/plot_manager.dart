@@ -101,6 +101,11 @@ class _PlotManagerPageState extends State<PlotManagerPage> {
       ),
     );
   }
+import 'add_plot.dart';
+import 'plot_details.dart';
+
+class PlotManagerPage extends StatelessWidget {
+  const PlotManagerPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -167,6 +172,10 @@ class _PlotManagerPageState extends State<PlotManagerPage> {
           }
 
           final result = await Navigator.of(context).push<dynamic>(
+    }) {
+      return InkWell(
+        onTap: () {
+          Navigator.of(context).push(
             MaterialPageRoute(
               builder: (_) => PlotDetailsPage(
                 title: title,
@@ -213,6 +222,9 @@ class _PlotManagerPageState extends State<PlotManagerPage> {
             // Firestore stream should update automatically; force rebuild to reflect optimistic change
             setState(() {});
           }
+              ),
+            ),
+          );
         },
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: 10),
@@ -283,12 +295,14 @@ class _PlotManagerPageState extends State<PlotManagerPage> {
                                           'Healthy'
                                       ? Colors.green
                                       : Colors.red,
+                                  color: healthy ? Colors.green : Colors.red,
                                   shape: BoxShape.circle,
                                 ),
                               ),
                               const SizedBox(width: 6),
                               Text(
                                 status ?? (healthy ? 'Healthy' : 'Suspected'),
+                                healthy ? 'Healthy' : 'Suspected Sheath Blight',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[600],
@@ -344,6 +358,9 @@ class _PlotManagerPageState extends State<PlotManagerPage> {
                         icon: const Icon(Icons.menu, color: Colors.green),
                       );
                     },
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.menu, color: Colors.green),
                   ),
                   const SizedBox(height: 6),
                   const Text(
@@ -482,6 +499,18 @@ class _PlotManagerPageState extends State<PlotManagerPage> {
                           },
                         ),
 
+                        _plotCard(
+                          title: 'Plot A',
+                          variety: 'Jasmine Rice',
+                          age: '20 weeks old',
+                          healthy: true,
+                        ),
+                        _plotCard(
+                          title: 'Plot B',
+                          variety: 'Jasmine Rice',
+                          age: '20 weeks old',
+                          healthy: false,
+                        ),
                         const SizedBox(height: 80),
                       ],
                     ),

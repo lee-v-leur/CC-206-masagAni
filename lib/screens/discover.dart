@@ -19,16 +19,19 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   bool _showFilterOverlay = false;
   final GlobalKey _filterIconKey = GlobalKey();
 
+  
   // Filter options
   String _sortBy = 'mostRecent';
   Set<String> _selectedLanguages = {};
   Set<String> _selectedDiseases = {};
 
+  
   // Initial filter state
   String _initialSortBy = 'mostRecent';
   Set<String> _initialLanguages = {};
   Set<String> _initialDiseases = {};
 
+  
   // Favorited articles tracking
   final Map<String, Map<String, String>> _favoritedArticles = {};
 
@@ -38,6 +41,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     super.dispose();
   }
 
+  
   void _toggleFavorite(String title, String image, String author, String date) {
     setState(() {
       if (_favoritedArticles.containsKey(title)) {
@@ -52,6 +56,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     });
   }
 
+  
   List<Widget> _buildFavoriteCards() {
     return _favoritedArticles.entries.map((entry) {
       return _FavoriteCard(
@@ -71,6 +76,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         !_initialLanguages.difference(_selectedLanguages).isEmpty ||
         !_selectedDiseases.difference(_initialDiseases).isEmpty ||
         !_initialDiseases.difference(_selectedDiseases).isEmpty;
+  
+  bool get _hasFilterChanges {
+    return _sortBy != _initialSortBy ||
+           !_selectedLanguages.difference(_initialLanguages).isEmpty ||
+           !_initialLanguages.difference(_selectedLanguages).isEmpty ||
+           !_selectedDiseases.difference(_initialDiseases).isEmpty ||
+           !_initialDiseases.difference(_selectedDiseases).isEmpty;
   }
 
   @override
@@ -81,6 +93,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     return Scaffold(
       backgroundColor: backgroundColor,
       drawer: const DiscoverMenuDrawer(),
+    
+    return Scaffold(
+      backgroundColor: backgroundColor,
       body: Stack(
         children: [
           SafeArea(
@@ -385,6 +400,261 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             ),
           ),
 
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Top bar with menu icon
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.menu,
+                        color: primaryGreen,
+                        size: 28,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Discover title with filter icon
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Discover',
+                          style: TextStyle(
+                            color: primaryGreen,
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Your daily dose of agri wisdom.',
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                    GestureDetector(
+                      key: _filterIconKey,
+                      onTap: () {
+                        setState(() {
+                          _showFilterOverlay = !_showFilterOverlay;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        child: const Icon(
+                          Icons.tune,
+                          color: primaryGreen,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              const SizedBox(height: 24),
+              
+              // Favorites section
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Favorites',
+                      style: TextStyle(
+                        color: Color(0xFF8BC34A),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FavoritesScreen(
+                              favoritedArticles: _favoritedArticles,
+                              onToggleFavorite: _toggleFavorite,
+                            ),
+                          ),
+                        ).then((_) => setState(() {}));
+                      },
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(0, 0),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: const Text(
+                        'View all',
+                        style: TextStyle(
+                          color: Color(0xFF8BC34A),
+                          fontSize: 12,
+                          decoration: TextDecoration.underline,
+                          decorationColor: Color(0xFF8BC34A),
+                          decorationThickness: 1,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              const SizedBox(height: 12),
+              
+              // Horizontal scrollable favorites
+              SizedBox(
+                height: 200,
+                child: _favoritedArticles.isEmpty
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Text(
+                            'No favorites yet. Tap the bookmark icon on articles to add them here!',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      )
+                    : PageView(
+                        controller: _pageController,
+                        padEnds: false,
+                        onPageChanged: (index) {
+                          setState(() {
+                            _currentPage = index;
+                          });
+                        },
+                        children: _buildFavoriteCards(),
+                      ),
+              ),
+              
+              const SizedBox(height: 12),
+              
+              // Dots indicator
+              if (_favoritedArticles.isNotEmpty)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    _favoritedArticles.length,
+                    (index) => Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _currentPage == index
+                            ? const Color(0xFF8BC34A)
+                            : Colors.grey[400],
+                      ),
+                    ),
+                  ),
+                ),
+              
+              const SizedBox(height: 24),
+              
+              // For You section
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  'For You',
+                  style: TextStyle(
+                    color: Color(0xFF8BC34A),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              
+              const SizedBox(height: 16),
+              
+              // For You list
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  children: [
+                    _ArticleCard(
+                      image: 'assets/images/educ/rice_immunity.jpg',
+                      title: 'Simple Ways to Boost Rice Immunity Naturally',
+                      author: 'McKinley, A.',
+                      date: 'January 27, 2014',
+                      isFavorited: _favoritedArticles.containsKey('Simple Ways to Boost Rice Immunity Naturally'),
+                      onToggleFavorite: () => _toggleFavorite('Simple Ways to Boost Rice Immunity Naturally', 'assets/images/educ/rice_immunity.jpg', 'McKinley, A.', 'January 27, 2014'),
+                      favoritedArticles: _favoritedArticles,
+                      onToggleFavoriteGlobal: _toggleFavorite,
+                    ),
+                    const SizedBox(height: 16),
+                    _ArticleCard(
+                      image: 'assets/images/educ/soil_care.jpg',
+                      title: 'Proper Soil Care for Stronger Rice Plants',
+                      author: 'Junior, Q.',
+                      date: 'April 16, 2011',
+                      isFavorited: _favoritedArticles.containsKey('Proper Soil Care for Stronger Rice Plants'),
+                      onToggleFavorite: () => _toggleFavorite('Proper Soil Care for Stronger Rice Plants', 'assets/images/educ/soil_care.jpg', 'Junior, Q.', 'April 16, 2011'),
+                      favoritedArticles: _favoritedArticles,
+                      onToggleFavoriteGlobal: _toggleFavorite,
+                    ),
+                    const SizedBox(height: 16),
+                    _ArticleCard(
+                      image: 'assets/images/educ/sheath_blight.jpg',
+                      title: 'Hidden Under the Leaves: Detecting Sheath Blight Early',
+                      author: 'Campbell, J.',
+                      date: 'February 22, 2015',
+                      isFavorited: _favoritedArticles.containsKey('Hidden Under the Leaves: Detecting Sheath Blight Early'),
+                      onToggleFavorite: () => _toggleFavorite('Hidden Under the Leaves: Detecting Sheath Blight Early', 'assets/images/educ/sheath_blight.jpg', 'Campbell, J.', 'February 22, 2015'),
+                      favoritedArticles: _favoritedArticles,
+                      onToggleFavoriteGlobal: _toggleFavorite,
+                    ),
+                    const SizedBox(height: 16),
+                    _ArticleCard(
+                      image: 'assets/images/educ/heat_stress.jpg',
+                      title: 'Is It Just Heat Stress or Rice Yellowing Syndrome?',
+                      author: 'Keung, H.',
+                      date: 'December 1, 2022',
+                      isFavorited: _favoritedArticles.containsKey('Is It Just Heat Stress or Rice Yellowing Syndrome?'),
+                      onToggleFavorite: () => _toggleFavorite('Is It Just Heat Stress or Rice Yellowing Syndrome?', 'assets/images/educ/heat_stress.jpg', 'Keung, H.', 'December 1, 2022'),
+                      favoritedArticles: _favoritedArticles,
+                      onToggleFavoriteGlobal: _toggleFavorite,
+                    ),
+                    const SizedBox(height: 16),
+                    _ArticleCard(
+                      image: 'assets/images/educ/brown_spot.jpg',
+                      title: 'Spotting Brown Spot Disease Before It Spreads',
+                      author: 'Rodriguez, L.',
+                      date: 'March 8, 2018',
+                      isFavorited: _favoritedArticles.containsKey('Spotting Brown Spot Disease Before It Spreads'),
+                      onToggleFavorite: () => _toggleFavorite('Spotting Brown Spot Disease Before It Spreads', 'assets/images/educ/brown_spot.jpg', 'Rodriguez, L.', 'March 8, 2018'),
+                      favoritedArticles: _favoritedArticles,
+                      onToggleFavoriteGlobal: _toggleFavorite,
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            ],
+          ),
+            ),
+          ),
+          
           // Filter overlay
           if (_showFilterOverlay)
             Positioned.fill(
@@ -466,6 +736,37 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                     ),
                                   ]),
 
+                                  _buildFilterSection(
+                                    'Sort By',
+                                    [
+                                      _buildRadioOption('Most Recent', 'mostRecent'),
+                                      _buildRadioOption('Oldest', 'oldest'),
+                                    ],
+                                  ),
+                                  
+                                  const Divider(height: 1, color: Color(0xFFE0E0E0)),
+                                  
+                                  // Language section
+                                  _buildFilterSection(
+                                    'Language',
+                                    [
+                                      _buildCheckboxOption('English', 'english'),
+                                      _buildCheckboxOption('Filipino', 'filipino'),
+                                    ],
+                                  ),
+                                  
+                                  const Divider(height: 1, color: Color(0xFFE0E0E0)),
+                                  
+                                  // Disease section
+                                  _buildFilterSection(
+                                    'Disease',
+                                    [
+                                      _buildCheckboxOption('Rice Yellowing Syndrome', 'yellowing'),
+                                      _buildCheckboxOption('Sheath Blight', 'sheath'),
+                                      _buildCheckboxOption('Brown Spot Disease', 'brownspot'),
+                                    ],
+                                  ),
+                                  
                                   // Save Changes button
                                   Padding(
                                     padding: const EdgeInsets.all(16),
@@ -490,6 +791,18 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                             : null,
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: _hasFilterChanges
+                                        onPressed: _hasFilterChanges ? () {
+                                          setState(() {
+                                            _showFilterOverlay = false;
+                                            // Save current state as initial
+                                            _initialSortBy = _sortBy;
+                                            _initialLanguages = Set.from(_selectedLanguages);
+                                            _initialDiseases = Set.from(_selectedDiseases);
+                                          });
+                                          // TODO: Apply filters to the content
+                                        } : null,
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: _hasFilterChanges 
                                               ? const Color(0xFFB2E0B2)
                                               : const Color(0xFFBDBDBD),
                                           foregroundColor: _hasFilterChanges
@@ -514,6 +827,14 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                                     color: Color(0xFF757575),
                                                     width: 1,
                                                   ),
+                                          disabledBackgroundColor: const Color(0xFFBDBDBD),
+                                          disabledForegroundColor: const Color(0xFF424242),
+                                          padding: const EdgeInsets.symmetric(vertical: 12),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(6),
+                                            side: _hasFilterChanges
+                                                ? BorderSide.none
+                                                : const BorderSide(color: Color(0xFF757575), width: 1),
                                           ),
                                         ),
                                         child: const Text(
@@ -542,6 +863,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     );
   }
 
+  
   Widget _buildFilterSection(String title, List<Widget> children) {
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -563,6 +885,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     );
   }
 
+  
   Widget _buildRadioOption(String label, String value) {
     return GestureDetector(
       onTap: () {
@@ -582,6 +905,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               color: _sortBy == value
                   ? const Color(0xFF099509)
                   : Colors.grey[400],
+              _sortBy == value ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+              size: 18,
+              color: _sortBy == value ? const Color(0xFF099509) : Colors.grey[400],
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -602,6 +928,24 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         ? _selectedLanguages.contains(value)
         : _selectedDiseases.contains(value);
 
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildCheckboxOption(String label, String value) {
+    final isLanguage = value == 'english' || value == 'filipino';
+    final isSelected = isLanguage 
+        ? _selectedLanguages.contains(value)
+        : _selectedDiseases.contains(value);
+    
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -634,6 +978,10 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               child: Text(
                 label,
                 style: TextStyle(fontSize: 13, color: Colors.black87),
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.black87,
+                ),
               ),
             ),
           ],
@@ -676,6 +1024,7 @@ class _FavoriteCard extends StatelessWidget {
               isFavorited: isFav,
               onToggleFavorite: () =>
                   onToggleFavoriteGlobal(title, image, author, date),
+              onToggleFavorite: () => onToggleFavoriteGlobal(title, image, author, date),
               favoritedArticles: favoritedArticles,
               onToggleFavoriteGlobal: onToggleFavoriteGlobal,
             ),
@@ -745,6 +1094,57 @@ class _FavoriteCard extends StatelessWidget {
                 ),
               ),
             ],
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              image,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                color: Colors.green[200],
+                child: const Icon(Icons.image, size: 64, color: Colors.white),
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.7),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '$author • $date',
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      height: 1.3,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
           ),
         ),
       ),
@@ -1059,6 +1459,66 @@ class _DiscoverDrawerHoverTileState extends State<_DiscoverDrawerHoverTile> {
                 const SizedBox.shrink(),
             ],
           ),
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(12),
+              bottomLeft: Radius.circular(12),
+            ),
+            child: Image.asset(
+              image,
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                width: 100,
+                height: 100,
+                color: Colors.green[200],
+                child: const Icon(Icons.image, color: Colors.white),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                      height: 1.3,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '$author  •  $date',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: GestureDetector(
+              onTap: onToggleFavorite,
+              child: Icon(
+                isFavorited ? Icons.bookmark : Icons.bookmark_border,
+                color: Colors.green[700],
+                size: 24,
+              ),
+            ),
+          ),
+        ],
         ),
       ),
     );

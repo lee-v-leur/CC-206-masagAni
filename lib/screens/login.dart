@@ -21,6 +21,11 @@ import 'package:flutter/material.dart';
 // removed social icon dependency (social-login UI removed)
 import 'loading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'homepage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'loading.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -31,6 +36,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen>
     with SingleTickerProviderStateMixin {
+  bool _loading = false;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailCtrl = TextEditingController();
   final TextEditingController _passCtrl = TextEditingController();
@@ -94,6 +100,7 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Future<void> _submit() async {
+    // Validate inputs first
     if (!_formKey.currentState!.validate()) return;
     if (!mounted) return;
     setState(() => _loading = true);
@@ -108,6 +115,7 @@ class _LoginScreenState extends State<LoginScreen>
       );
 
       // Signed in successfully
+      // Debugging info
       // ignore: avoid_print
       print(
         'Signed in: uid=${userCred.user?.uid}, email=${userCred.user?.email}',
@@ -145,6 +153,42 @@ class _LoginScreenState extends State<LoginScreen>
         }
       }
     } catch (e) {
+
+      // Fetch user's first name from Firestore
+      String firstName = 'User';
+      try {
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCred.user?.uid)
+            .get();
+        
+        if (userDoc.exists) {
+          final data = userDoc.data();
+          firstName = data?['firstName'] ?? data?['name']?.split(' ')[0] ?? 'User';
+        }
+      } catch (e) {
+        // ignore: avoid_print
+        print('Error fetching user name: $e');
+      }
+
+      if (!mounted) return;
+      Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(
+        builder: (_) => LoadingScreen(firstName: firstName),
+      ));
+    } on FirebaseAuthException catch (e) {
+      final code = e.code;
+      final message = e.message ?? 'Authentication error';
+      // ignore: avoid_print
+      print('FirebaseAuthException: code=$code message=$message');
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Login error [$code]: $message')));
+    } catch (e) {
+      // ignore: avoid_print
+      print('Unexpected login error: $e');
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -163,6 +207,24 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   // Social-login removed; no helper needed.
+  // Button width helper removed (not used while auth is bypassed).
+
+  // Social icon builder with hover & tap scale animation
+  Widget _buildSocialIcon({
+    required IconData icon,
+    required Color iconColor,
+    required VoidCallback onTap,
+    double radius = 22,
+  }) {
+    return _HoverTapScale(
+      child: CircleAvatar(
+        radius: radius,
+        backgroundColor: Colors.white,
+        child: FaIcon(icon, color: iconColor, size: radius - 6),
+      ),
+      onTap: onTap,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -176,6 +238,7 @@ class _LoginScreenState extends State<LoginScreen>
     // Responsive sizes
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double fieldWidth = _computeFieldWidth(deviceWidth);
+    // final double buttonWidth = _computeButtonWidth(deviceWidth);
 
     // Text scale factor for accessibility / small screens
     final double textScale = MediaQuery.of(
@@ -379,6 +442,10 @@ class _LoginScreenState extends State<LoginScreen>
                                           fontWeight: FontWeight.w700,
                                           color: Colors.white,
                                           letterSpacing: 1.2,
+                                        'Login',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.white,
                                         ),
                                       ),
                               ),
@@ -403,3 +470,73 @@ class _LoginScreenState extends State<LoginScreen>
 /// Widget that provides hover (for web) and tap scale animation.
 /// It scales down slightly on tap, and grows a bit on hover (web).
 // Hover/tap animation removed with social-login UI.
+class _HoverTapScale extends StatefulWidget {
+  final Widget child;
+  final VoidCallback? onTap;
+  // internal constants for animation (hover/tap) are defined in state
+  const _HoverTapScale({required this.child, this.onTap});
+
+  @override
+  State<_HoverTapScale> createState() => _HoverTapScaleState();
+}
+
+class _HoverTapScaleState extends State<_HoverTapScale>
+    with SingleTickerProviderStateMixin {
+  double _scale = 1.0;
+  bool _hovering = false;
+  static const double _hoverScale = 1.06;
+  static const double _tapScale = 0.92;
+  static const Duration _duration = Duration(milliseconds: 120);
+
+  void _onEnter(bool hover) {
+    if (!mounted) return;
+    setState(() {
+      _hovering = hover;
+      _scale = hover ? _hoverScale : 1.0;
+    });
+  }
+
+  void _onTapDown(TapDownDetails _) {
+    setState(() => _scale = _tapScale);
+  }
+
+  void _onTapUp(TapUpDetails _) {
+    setState(() => _scale = _hovering ? _hoverScale : 1.0);
+  }
+
+  void _onTapCancel() {
+    setState(() => _scale = _hovering ? _hoverScale : 1.0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final child = GestureDetector(
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      onTap: widget.onTap,
+      behavior: HitTestBehavior.translucent,
+      child: AnimatedScale(
+        scale: _scale,
+        duration: _duration,
+        curve: Curves.easeOut,
+        child: widget.child,
+      ),
+    );
+
+    // Only use MouseRegion hover effects when running on web or desktop
+    if (kIsWeb ||
+        Theme.of(context).platform == TargetPlatform.macOS ||
+        Theme.of(context).platform == TargetPlatform.windows ||
+        Theme.of(context).platform == TargetPlatform.linux) {
+      return MouseRegion(
+        onEnter: (_) => _onEnter(true),
+        onExit: (_) => _onEnter(false),
+        cursor: SystemMouseCursors.click,
+        child: child,
+      );
+    }
+
+    return child;
+  }
+}

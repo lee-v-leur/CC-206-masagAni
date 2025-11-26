@@ -43,6 +43,14 @@ class _ArticleScreenState extends State<ArticleScreen> {
     final List<Map<String, String>> relatedArticles = _getRelatedArticles(
       widget.title,
     );
+    
+    // Determine if this article should show symptoms section
+    final bool shouldShowSymptoms = !widget.title.toLowerCase().contains('care') && 
+                                     !widget.title.toLowerCase().contains('boost') &&
+                                     !widget.title.toLowerCase().contains('manage');
+
+    // Get related articles based on current article
+    final List<Map<String, String>> relatedArticles = _getRelatedArticles(widget.title);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -74,6 +82,10 @@ class _ArticleScreenState extends State<ArticleScreen> {
                       ),
                     ),
 
+                        child: const Icon(Icons.image, size: 64, color: Colors.white),
+                      ),
+                    ),
+                    
                     // Title overlay at bottom
                     Positioned(
                       left: 0,
@@ -128,6 +140,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                   ],
                 ),
 
+                
                 // Author info
                 Padding(
                   padding: const EdgeInsets.all(20),
@@ -141,6 +154,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                   ),
                 ),
 
+                
                 // Article content
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -157,6 +171,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                       ),
                       const SizedBox(height: 24),
 
+                      
                       // Symptoms section (only for disease articles)
                       if (shouldShowSymptoms) ...[
                         const Text(
@@ -169,6 +184,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         ),
                         const SizedBox(height: 12),
 
+                        
                         const Text(
                           'Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper',
                           style: TextStyle(
@@ -180,6 +196,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         const SizedBox(height: 20),
                       ],
 
+                      
                       // Image grid
                       Row(
                         children: [
@@ -237,6 +254,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                       ),
                       const SizedBox(height: 20),
 
+                      
                       const Text(
                         'Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.',
                         style: TextStyle(
@@ -247,6 +265,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                       ),
                       const SizedBox(height: 32),
 
+                      
                       // Related Articles section
                       const Text(
                         'Related Articles',
@@ -266,6 +285,11 @@ class _ArticleScreenState extends State<ArticleScreen> {
                               articleTitle,
                             ) ??
                             false;
+                      
+                      // Related articles list
+                      ...relatedArticles.map((article) {
+                        final articleTitle = article['title']!;
+                        final isFav = widget.favoritedArticles?.containsKey(articleTitle) ?? false;
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 16),
                           child: _RelatedArticleCard(
@@ -290,6 +314,20 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         );
                       }).toList(),
 
+                            onToggleFavorite: widget.onToggleFavoriteGlobal != null
+                                ? () => widget.onToggleFavoriteGlobal!(
+                                      articleTitle,
+                                      article['image']!,
+                                      article['author']!,
+                                      article['date']!,
+                                    )
+                                : () {},
+                            favoritedArticles: widget.favoritedArticles,
+                            onToggleFavoriteGlobal: widget.onToggleFavoriteGlobal,
+                          ),
+                        );
+                      }).toList(),
+                      
                       const SizedBox(height: 20),
                     ],
                   ),
@@ -298,6 +336,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
             ),
           ),
 
+          
           // Top bar with back and bookmark buttons
           Positioned(
             top: 0,
@@ -309,6 +348,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                   horizontal: 12,
                   vertical: 8,
                 ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -322,6 +362,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                       ),
                     ),
 
+                    
                     // Action buttons
                     Row(
                       children: [
@@ -339,6 +380,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                               widget.isFavorited
                                   ? Icons.bookmark
                                   : Icons.bookmark_border,
+                              widget.isFavorited ? Icons.bookmark : Icons.bookmark_border,
                               color: Colors.black87,
                               size: 20,
                             ),
@@ -378,6 +420,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
     );
   }
 
+  
   List<Map<String, String>> _getRelatedArticles(String currentTitle) {
     final allArticles = [
       {
@@ -412,6 +455,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
       },
     ];
 
+    
     // Filter out the current article and return up to 3 related articles
     return allArticles
         .where((article) => article['title'] != currentTitle)
@@ -514,6 +558,10 @@ class _RelatedArticleCard extends StatelessWidget {
                     Text(
                       '$author  •  $date',
                       style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey[600],
+                      ),
                     ),
                   ],
                 ),
