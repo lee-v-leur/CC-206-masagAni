@@ -14,72 +14,197 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class AppMenuDrawer extends StatelessWidget {
+class AppMenuDrawer extends StatefulWidget {
   const AppMenuDrawer({super.key});
+
+  @override
+  State<AppMenuDrawer> createState() => _AppMenuDrawerState();
+}
+
+class _AppMenuDrawerState extends State<AppMenuDrawer> {
+  String _selected = 'Home';
+
+  void _select(String label) {
+    setState(() {
+      _selected = label;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(color: Color(0xFF0B8A12)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    'MasagAni',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+      child: Container(
+        color: const Color(0xFFFFFFD6),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8.0, bottom: 18),
+                    child: Image.asset(
+                      'assets/images/masagani_logoname.png',
+                      height: 60,
+                      fit: BoxFit.contain,
                     ),
                   ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Manage plots and profile',
-                    style: TextStyle(color: Colors.white70),
+                ),
+                const SizedBox(height: 8),
+                _HoverListTile(
+                  label: 'Home',
+                  selected: _selected == 'Home',
+                  onTap: () {
+                    _select('Home');
+                    Navigator.of(context).pop();
+                    Navigator.of(
+                      context,
+                    ).push(MaterialPageRoute(builder: (_) => const HomePage()));
+                  },
+                ),
+                _HoverListTile(
+                  label: 'Plots',
+                  selected: _selected == 'Plots',
+                  onTap: () {
+                    _select('Plots');
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const PlotManagerPage(),
+                      ),
+                    );
+                  },
+                ),
+                _HoverListTile(
+                  label: 'Discover',
+                  selected: _selected == 'Discover',
+                  onTap: () {
+                    _select('Discover');
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const DiscoverScreen()),
+                    );
+                  },
+                ),
+                _HoverListTile(
+                  label: 'Profile',
+                  selected: _selected == 'Profile',
+                  onTap: () {
+                    _select('Profile');
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                    );
+                  },
+                ),
+                const Spacer(),
+                const Divider(),
+                _HoverListTile(
+                  label: 'Log out',
+                  leading: const Icon(Icons.logout, color: Color(0xFF0B8A12)),
+                  onTap: () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (_) => const WelcomeScreen(title: 'masagAni'),
+                      ),
+                      (route) => false,
+                    );
+                  },
+                  isLogout: true,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HoverListTile extends StatefulWidget {
+  final String label;
+  final Widget? leading;
+  final VoidCallback? onTap;
+  final bool selected;
+  final bool isLogout;
+
+  const _HoverListTile({
+    Key? key,
+    required this.label,
+    this.leading,
+    this.onTap,
+    this.selected = false,
+    this.isLogout = false,
+  }) : super(key: key);
+
+  @override
+  State<_HoverListTile> createState() => _HoverListTileState();
+}
+
+class _HoverListTileState extends State<_HoverListTile> {
+  bool _hovering = false;
+  bool _pressing = false;
+
+  void _onEnter(PointerEvent _) => setState(() => _hovering = true);
+  void _onExit(PointerEvent _) => setState(() => _hovering = false);
+
+  @override
+  Widget build(BuildContext context) {
+    const hoverBg = Color(0xFFF9ED96);
+    final bool highlight = widget.selected || _hovering || _pressing;
+
+    return MouseRegion(
+      onEnter: _onEnter,
+      onExit: _onExit,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: (_) => setState(() {
+          _pressing = true;
+          _hovering = false;
+        }),
+        onTapUp: (_) => setState(() => _pressing = false),
+        onTapCancel: () => setState(() => _pressing = false),
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: _pressing
+              ? Duration.zero
+              : const Duration(milliseconds: 20),
+          curve: Curves.easeOut,
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          decoration: BoxDecoration(
+            color: highlight ? hoverBg : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              if (widget.leading != null) ...[
+                widget.leading!,
+                const SizedBox(width: 10),
+              ],
+              Expanded(
+                child: AnimatedDefaultTextStyle(
+                  duration: _pressing
+                      ? Duration.zero
+                      : const Duration(milliseconds: 160),
+                  style: TextStyle(
+                    fontFamily: 'Gotham',
+                    fontSize: highlight ? 20 : 18,
+                    fontWeight: widget.selected
+                        ? FontWeight.w300
+                        : FontWeight.w500,
+                    color: const Color(0xFF0B8A12),
                   ),
-                ],
+                  child: Text(widget.label),
+                ),
               ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Profile'),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.explore),
-              title: const Text('Discover'),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const DiscoverScreen()),
-                );
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Logout'),
-              onTap: () async {
-                await FirebaseAuth.instance.signOut();
-                Navigator.of(context).popUntil((route) => route.isFirst);
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (_) => const WelcomeScreen(title: 'masagAni'),
-                  ),
-                );
-              },
-            ),
-          ],
+              if (widget.isLogout)
+                const SizedBox.shrink()
+              else
+                const SizedBox.shrink(),
+            ],
+          ),
         ),
       ),
     );

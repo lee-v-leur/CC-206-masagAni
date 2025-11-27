@@ -93,6 +93,76 @@ class _LoginScreenState extends State<LoginScreen>
     return null;
   }
 
+  Future<void> _forgotPassword() async {
+    final emailCtrl = TextEditingController(text: _emailCtrl.text);
+    await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Reset password'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Enter the email for your account. We will send a password reset link.',
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: emailCtrl,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(hintText: 'Email'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final email = emailCtrl.text.trim();
+              final err = _validateEmail(email);
+              if (err != null) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(err)));
+                return;
+              }
+              try {
+                await FirebaseAuth.instance.sendPasswordResetEmail(
+                  email: email,
+                );
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Password reset email sent. Check your inbox.',
+                      ),
+                    ),
+                  );
+                }
+                Navigator.of(ctx).pop(true);
+              } on FirebaseAuthException catch (e) {
+                if (mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: ${e.message}')),
+                  );
+              } catch (e) {
+                if (mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Unexpected error: $e')),
+                  );
+              }
+            },
+            child: const Text('Send'),
+          ),
+        ],
+      ),
+    );
+    emailCtrl.dispose();
+    return;
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (!mounted) return;
@@ -345,7 +415,28 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                             ),
 
-                            const SizedBox(height: 22),
+                            const SizedBox(height: 12),
+
+                            // Forgot password (right-aligned subtle link)
+                            SizedBox(
+                              width: fieldWidth,
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: GestureDetector(
+                                  onTap: _forgotPassword,
+                                  child: Text(
+                                    'Forgot Password?',
+                                    style: TextStyle(
+                                      color: hintGray,
+                                      fontFamily: 'Inter',
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 10),
 
                             // Login button
                             SizedBox(
