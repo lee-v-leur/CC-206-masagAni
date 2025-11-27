@@ -1,1 +1,27 @@
+{
+	"flutter": {
+		"platforms": {
+			"android": {
+				"default": {
+					"projectId": "masagani-app-206",
+					"appId": "1:335612678883:android:776936caf61d16dc8c6bd6",
+					"fileOutput": "android/app/google-services.json"
+				}
+			},
+			"dart": {
+				"lib/firebase_options.dart": {
+					"projectId": "masagani-app-206",
+					"configurations": {
+						"android": "1:335612678883:android:776936caf61d16dc8c6bd6",
+						"ios": "1:335612678883:ios:7a3f5e39dc5a5b4b8c6bd6",
+						"web": "1:335612678883:web:335bd597d98c1cc38c6bd6"
+					}
+				}
+			}
+		}
+	},
+	"firestore": {
+		"rules": "firestore.rules"
+	}
+}
 {"flutter":{"platforms":{"android":{"default":{"projectId":"masagani-app-206","appId":"1:335612678883:android:692364efb0eb429d8c6bd6","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"masagani-app-206","configurations":{"android":"1:335612678883:android:692364efb0eb429d8c6bd6","ios":"1:335612678883:ios:7a3f5e39dc5a5b4b8c6bd6","web":"1:335612678883:web:335bd597d98c1cc38c6bd6"}}}}}}
