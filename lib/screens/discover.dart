@@ -403,7 +403,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top bar with menu icon
+              // Top bar with menu icon and favorites
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Row(
@@ -413,6 +413,24 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       onPressed: () {},
                       icon: const Icon(
                         Icons.menu,
+                        color: primaryGreen,
+                        size: 28,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FavoritesScreen(
+                              favoritedArticles: _favoritedArticles,
+                              onToggleFavorite: _toggleFavorite,
+                            ),
+                          ),
+                        ).then((_) => setState(() {}));
+                      },
+                      icon: const Icon(
+                        Icons.bookmark,
                         color: primaryGreen,
                         size: 28,
                       ),
@@ -471,47 +489,41 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               
               const SizedBox(height: 24),
               
-              // Favorites section
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // Carousel for three main disease articles
+              SizedBox(
+                height: 200,
+                child: PageView(
+                  controller: _pageController,
+                  padEnds: false,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentPage = index;
+                    });
+                  },
                   children: [
-                    const Text(
-                      'Favorites',
-                      style: TextStyle(
-                        color: Color(0xFF8BC34A),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    _FavoriteCard(
+                      image: 'assets/images/diseases/rys/sheathcover.jpg',
+                      title: 'Sheath Blight Disease',
+                      author: '',
+                      date: '',
+                      favoritedArticles: _favoritedArticles,
+                      onToggleFavoriteGlobal: _toggleFavorite,
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => FavoritesScreen(
-                              favoritedArticles: _favoritedArticles,
-                              onToggleFavorite: _toggleFavorite,
-                            ),
-                          ),
-                        ).then((_) => setState(() {}));
-                      },
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size(0, 0),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: const Text(
-                        'View all',
-                        style: TextStyle(
-                          color: Color(0xFF8BC34A),
-                          fontSize: 12,
-                          decoration: TextDecoration.underline,
-                          decorationColor: Color(0xFF8BC34A),
-                          decorationThickness: 1,
-                        ),
-                      ),
+                    _FavoriteCard(
+                      image: 'assets/images/diseases/brown/browncover.jpg',
+                      title: 'Brown Spot Disease',
+                      author: '',
+                      date: '',
+                      favoritedArticles: _favoritedArticles,
+                      onToggleFavoriteGlobal: _toggleFavorite,
+                    ),
+                    _FavoriteCard(
+                      image: 'assets/images/diseases/rys/ryspaddy.png',
+                      title: 'Rice Yellowing Syndrome',
+                      author: '',
+                      date: '',
+                      favoritedArticles: _favoritedArticles,
+                      onToggleFavoriteGlobal: _toggleFavorite,
                     ),
                   ],
                 ),
@@ -519,56 +531,24 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               
               const SizedBox(height: 12),
               
-              // Horizontal scrollable favorites
-              SizedBox(
-                height: 200,
-                child: _favoritedArticles.isEmpty
-                    ? Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(24.0),
-                          child: Text(
-                            'No favorites yet. Tap the bookmark icon on articles to add them here!',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      )
-                    : PageView(
-                        controller: _pageController,
-                        padEnds: false,
-                        onPageChanged: (index) {
-                          setState(() {
-                            _currentPage = index;
-                          });
-                        },
-                        children: _buildFavoriteCards(),
-                      ),
-              ),
-              
-              const SizedBox(height: 12),
-              
               // Dots indicator
-              if (_favoritedArticles.isNotEmpty)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    _favoritedArticles.length,
-                    (index) => Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _currentPage == index
-                            ? const Color(0xFF8BC34A)
-                            : Colors.grey[400],
-                      ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  3,
+                  (index) => Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _currentPage == index
+                          ? const Color(0xFF8BC34A)
+                          : Colors.grey[400],
                     ),
                   ),
                 ),
+              ),
               
               const SizedBox(height: 24),
               
@@ -741,17 +721,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                     [
                                       _buildRadioOption('Most Recent', 'mostRecent'),
                                       _buildRadioOption('Oldest', 'oldest'),
-                                    ],
-                                  ),
-                                  
-                                  const Divider(height: 1, color: Color(0xFFE0E0E0)),
-                                  
-                                  // Language section
-                                  _buildFilterSection(
-                                    'Language',
-                                    [
-                                      _buildCheckboxOption('English', 'english'),
-                                      _buildCheckboxOption('Filipino', 'filipino'),
                                     ],
                                   ),
                                   
@@ -1122,14 +1091,16 @@ class _FavoriteCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '$author • $date',
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 12,
+                  if (author.isNotEmpty && date.isNotEmpty) ...[
+                    Text(
+                      '$author • $date',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
+                    const SizedBox(height: 8),
+                  ],
                   Text(
                     title,
                     style: const TextStyle(
