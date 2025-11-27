@@ -1,0 +1,94 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Allow authenticated users to read/write their own user document
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Allow authenticated users to read/write documents in their own plots subcollection
+    match /users/{userId}/plots/{plotId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Allow reads/writes to any nested subcollections under a user's plot (e.g., diagnoses)
+    match /users/{userId}/plots/{plotId}/{subCollection=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Allow authenticated users to read/write diagnostics stored at users/{userId}/diagnoses
+    match /users/{userId}/diagnoses/{diagnosisId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Rewards: allow authenticated owners to create/read reward docs under their user node.
+    // Prevent clients from marking `used` or setting `redeemedAt` to avoid spoofed redemptions;
+    // staff/admin should mark used through an admin SDK or a trusted Cloud Function.
+    match /users/{userId}/rewards/{rewardId} {
+      // Allow creating a reward doc only for the signed-in owner and require basic fields/types
+      allow create: if request.auth != null
+                    && request.auth.uid == userId
+                    && request.resource.data.ownerUid == request.auth.uid
+                    // required keys
+                    && request.resource.data.keys().hasAll(['ownerUid','code','title','points','createdAt','expiresAt','used'])
+                    // types
+                    && request.resource.data.points is int
+                    && request.resource.data.used is bool
+                    && request.resource.data.createdAt is timestamp
+                    && request.resource.data.expiresAt is timestamp;
+
+      // Owner may read/list their reward docs
+      allow get, list: if request.auth != null && request.auth.uid == userId;
+
+      // Allow updates by owner. Clients are NOT allowed to arbitrarily toggle `used`.
+      // However, allow the specific transition where the owner marks a reward as redeemed
+      // (client flips `used` from false -> true and provides a `redeemedAt` timestamp).
+      // Otherwise, updates that don't change `used`/`redeemedAt` are permitted.
+      allow update: if request.auth != null
+                    && request.auth.uid == userId
+                    && (
+                      // no change to used/redeemedAt
+                      (request.resource.data.used == resource.data.used
+                        && request.resource.data.redeemedAt == resource.data.redeemedAt)
+                      // OR allowed single-shot transition: used false -> true with a redeemedAt timestamp
+                      || (
+                        resource.data.used == false
+                        && request.resource.data.used == true
+                        && request.resource.data.redeemedAt is timestamp
+                      )
+                    );
+
+      // Deletions should be performed only by trusted server/admin code
+      allow delete: if false;
+    }
+
+    // Claims: server/Cloud Function writes a claim when a reward is redeemed.
+    // Clients should NOT be able to create/update/delete claims; owners may only read their claims.
+    match /users/{userId}/claims/{claimId} {
+      // Allow the owner to create a claim record as part of a client-side redeem flow.
+      // Creation is allowed only when the signer is the owner and required fields are present
+      // and correctly typed. Updates/deletes are disallowed for clients.
+      allow create: if request.auth != null
+                    && request.auth.uid == userId
+                    && request.resource.data.keys().hasAll(['title','points','rewardRef','createdAt','redeemedAt'])
+                    && request.resource.data.title is string
+                    && request.resource.data.points is int
+                    && request.resource.data.rewardRef is string
+                    && request.resource.data.createdAt is timestamp
+                    && request.resource.data.redeemedAt is timestamp;
+
+      // Owner can read/list their claim records
+      allow get, list: if request.auth != null && request.auth.uid == userId;
+
+      // Disallow client updates or deletes
+      allow update, delete: if false;
+    }
+
+    // Fallback: deny everything else by default
+    // Explicitly deny any other access not covered above.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

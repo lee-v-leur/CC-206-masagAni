@@ -33,6 +33,30 @@ class WelcomeScreen extends StatelessWidget {
     );
   }
 
+  Route _createSignupRoute() {
+    return PageRouteBuilder(
+      transitionDuration: const Duration(milliseconds: 550),
+      reverseTransitionDuration: const Duration(milliseconds: 400),
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          const SignupPage(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+        );
+        final offsetAnim = Tween<Offset>(
+          begin: const Offset(0.0, 1.0),
+          end: Offset.zero,
+        ).animate(curved);
+        final fadeAnim = Tween<double>(begin: 0.0, end: 1.0).animate(curved);
+        return SlideTransition(
+          position: offsetAnim,
+          child: FadeTransition(opacity: fadeAnim, child: child),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,12 +102,14 @@ class WelcomeScreen extends StatelessWidget {
 
                 const SizedBox(height: 15),
 
+                // SIGN UP BUTTON (navigates to signup)
                 // SIGN UP BUTTON (navigate to signup)
                 SizedBox(
                   width: 220,
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
+                      Navigator.of(context).push(_createSignupRoute());
                       Navigator.of(context).push(
                         MaterialPageRoute(builder: (_) => const SignupScreen()),
                       );

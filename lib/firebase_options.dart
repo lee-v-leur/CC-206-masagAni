@@ -26,6 +26,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyA6OfjVq7YfyF61C_qZ6C2lxES1qt1srZA',
+    appId: '1:335612678883:android:776936caf61d16dc8c6bd6',
     appId: '1:335612678883:android:692364efb0eb429d8c6bd6',
     messagingSenderId: '335612678883',
     projectId: 'masagani-app-206',

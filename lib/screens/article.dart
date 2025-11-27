@@ -67,6 +67,14 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         width: double.infinity,
                         height: 280,
                         color: Colors.green[200],
+                        child: const Icon(
+                          Icons.image,
+                          size: 64,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+
                         child: const Icon(Icons.image, size: 64, color: Colors.white),
                       ),
                     ),
@@ -116,6 +124,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                     ),
                   ],
                 ),
+
                 
                 // Author info
                 Padding(
@@ -129,6 +138,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                     ),
                   ),
                 ),
+
                 
                 // Article content
                 Container(
@@ -973,6 +983,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         ),
                         const SizedBox(height: 28),
                       ],
+
                       
                       // Image grid
                       if (!isRYS)
@@ -1054,6 +1065,15 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
+
+                      // Related articles list
+                      ...relatedArticles.map((article) {
+                        final articleTitle = article['title']!;
+                        final isFav =
+                            widget.favoritedArticles?.containsKey(
+                              articleTitle,
+                            ) ??
+                            false;
                       
                       // Related articles list
                       ...relatedArticles.map((article) {
@@ -1067,6 +1087,22 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             author: article['author']!,
                             date: article['date']!,
                             isFavorited: isFav,
+                            onToggleFavorite:
+                                widget.onToggleFavoriteGlobal != null
+                                ? () => widget.onToggleFavoriteGlobal!(
+                                    articleTitle,
+                                    article['image']!,
+                                    article['author']!,
+                                    article['date']!,
+                                  )
+                                : () {},
+                            favoritedArticles: widget.favoritedArticles,
+                            onToggleFavoriteGlobal:
+                                widget.onToggleFavoriteGlobal,
+                          ),
+                        );
+                      }).toList(),
+
                             onToggleFavorite: widget.onToggleFavoriteGlobal != null
                                 ? () => widget.onToggleFavoriteGlobal!(
                                       articleTitle,
@@ -1088,6 +1124,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
               ],
             ),
           ),
+
           
           // Top bar with back and bookmark buttons
           Positioned(
@@ -1096,6 +1133,10 @@ class _ArticleScreenState extends State<ArticleScreen> {
             right: 0,
             child: SafeArea(
               child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1109,6 +1150,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         size: 28,
                       ),
                     ),
+
                     
                     // Action buttons
                     Row(
@@ -1148,6 +1190,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             padding: EdgeInsets.zero,
                             onPressed: widget.onToggleFavorite,
                             icon: Icon(
+                              widget.isFavorited
+                                  ? Icons.bookmark
+                                  : Icons.bookmark_border,
                               widget.isFavorited ? Icons.bookmark : Icons.bookmark_border,
                               color: Colors.black87,
                               size: 20,
@@ -1165,6 +1210,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
       ),
     );
   }
+
   
   List<Map<String, String>> _getRelatedArticles(String currentTitle) {
     final allArticles = [
@@ -1199,6 +1245,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
         'date': 'March 8, 2018',
       },
     ];
+
     
     // Filter out the current article and return up to 3 related articles
     return allArticles
@@ -1301,6 +1348,7 @@ class _RelatedArticleCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       '$author  •  $date',
+                      style: TextStyle(fontSize: 10, color: Colors.grey[600]),
                       style: TextStyle(
                         fontSize: 10,
                         color: Colors.grey[600],
