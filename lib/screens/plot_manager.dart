@@ -40,11 +40,6 @@ class _PlotManagerPageState extends State<PlotManagerPage> {
         'age': '20 weeks old',
         'healthy': true,
       },
-      'Plot B': {
-        'variety': 'Jasmine Rice',
-        'age': '20 weeks old',
-        'healthy': false,
-      },
     };
 
     final info = map[title];
@@ -205,7 +200,22 @@ class _PlotManagerPageState extends State<PlotManagerPage> {
                 if (doc.exists) {
                   final data = doc.data();
                   if (data != null && data['status'] != null) {
-                    _staticPlotStatus[title] = data['status'] as String;
+                    final rawStatus = data['status'] as String;
+                    final parts = rawStatus
+                        .split(',')
+                        .map((s) => s.trim())
+                        .where((s) => s.isNotEmpty)
+                        .toList();
+                    if (parts.length <= 1) {
+                      _staticPlotStatus[title] = rawStatus;
+                    } else {
+                      final split = (parts.length / 2).ceil();
+                      final first = parts.sublist(0, split).join(', ');
+                      final second = parts.sublist(split).join(', ');
+                      _staticPlotStatus[title] = second.isNotEmpty
+                          ? '$first\n$second'
+                          : first;
+                    }
                   }
                 }
               } catch (_) {}
@@ -288,7 +298,27 @@ class _PlotManagerPageState extends State<PlotManagerPage> {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                status ?? (healthy ? 'Healthy' : 'Suspected'),
+                                (() {
+                                  final raw =
+                                      status ??
+                                      (healthy ? 'Healthy' : 'Suspected');
+                                  final parts = raw
+                                      .split(',')
+                                      .map((s) => s.trim())
+                                      .where((s) => s.isNotEmpty)
+                                      .toList();
+                                  if (parts.length <= 1) return raw;
+                                  final split = (parts.length / 2).ceil();
+                                  final first = parts
+                                      .sublist(0, split)
+                                      .join(', ');
+                                  final second = parts
+                                      .sublist(split)
+                                      .join(', ');
+                                  return second.isNotEmpty
+                                      ? '$first\n$second'
+                                      : first;
+                                })(),
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[600],
@@ -358,8 +388,6 @@ class _PlotManagerPageState extends State<PlotManagerPage> {
                   Expanded(
                     child: ListView(
                       children: [
-                        // (Example plots removed)
-
                         // Divider between static examples and user plots
                         const SizedBox(height: 8),
                         const Divider(),

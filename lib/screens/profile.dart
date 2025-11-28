@@ -711,3 +711,13 @@ class _HoverListTileState extends State<_HoverListTile> {
     );
   }
 }
+
+// Public wrapper so other screens can reuse the same drawer UI.
+class ProfileDrawer extends StatelessWidget {
+  const ProfileDrawer({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const _ProfileDrawer();
+  }
+}

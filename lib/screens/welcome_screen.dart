@@ -102,23 +102,22 @@ class WelcomeScreen extends StatelessWidget {
 
                 const SizedBox(height: 15),
 
-                // SIGN UP BUTTON (navigates to signup)
+                // SIGN UP LINK (navigates to signup)
                 SizedBox(
                   width: 220,
                   height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(_createSignupRoute());
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF099509).withOpacity(0.75),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(_createSignupRoute());
+                      },
+                      child: const Text(
+                        'Or sign up here.',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF099509),
+                        ),
                       ),
-                    ),
-                    child: const Text(
-                      "Sign Up",
-                      style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
                   ),
                 ),

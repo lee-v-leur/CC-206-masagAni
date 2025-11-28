@@ -249,6 +249,109 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  Future<void> _changePassword() async {
+    // Show a dialog similar to the login screen's forgot-password flow.
+    final emailCtrl = TextEditingController(text: _emailController.text);
+    await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        backgroundColor: const Color(0xFFFEFEF1),
+        title: const Text('Reset password'),
+        titleTextStyle: TextStyle(
+          color: const Color(0xFF018D01),
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Enter the email for your account. We will send a password reset link.',
+              style: TextStyle(
+                color: const Color.fromARGB(255, 0, 0, 0),
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: emailCtrl,
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(
+                hintText: 'Email',
+                filled: true,
+                fillColor: const Color(0xFFEFF7EE),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: const Color(0xFF018D01)),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final email = emailCtrl.text.trim();
+              if (email.isEmpty || !email.contains('@')) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Enter a valid email')),
+                );
+                return;
+              }
+              try {
+                await FirebaseAuth.instance.sendPasswordResetEmail(
+                  email: email,
+                );
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Password reset email sent. Check your inbox.',
+                      ),
+                    ),
+                  );
+                }
+                Navigator.of(ctx).pop(true);
+              } on FirebaseAuthException catch (e) {
+                if (mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: ${e.message}')),
+                  );
+              } catch (e) {
+                if (mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Unexpected error: $e')),
+                  );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF018D01),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text('Send'),
+          ),
+        ],
+      ),
+    );
+    emailCtrl.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     const Color primaryGreen = Color(0xFF099509);
@@ -284,14 +387,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   controller: _nameController,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: Colors.green[50],
+                    // pale green rounded field to match profile UI
+                    fillColor: const Color(0xFFEFF7EE),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(18),
                       borderSide: BorderSide.none,
                     ),
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 14,
+                      horizontal: 16,
+                      vertical: 16,
                     ),
                   ),
                   validator: (v) =>
@@ -309,14 +413,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: Colors.green[50],
+                    fillColor: const Color(0xFFEFF7EE),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(18),
                       borderSide: BorderSide.none,
                     ),
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 14,
+                      horizontal: 16,
+                      vertical: 16,
                     ),
                   ),
                   validator: (v) {
@@ -337,14 +441,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   obscureText: true,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: Colors.green[50],
+                    fillColor: const Color(0xFFEFF7EE),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(18),
                       borderSide: BorderSide.none,
                     ),
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 14,
+                      horizontal: 16,
+                      vertical: 16,
                     ),
                   ),
                   validator: (v) {
@@ -354,17 +458,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   },
                 ),
 
+                const SizedBox(height: 12),
+                // subtle right-aligned 'Change password' text (UI only)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: GestureDetector(
+                    onTap: _changePassword,
+                    child: Text(
+                      'Change password',
+                      style: TextStyle(color: Colors.green[700], fontSize: 12),
+                    ),
+                  ),
+                ),
+
                 const SizedBox(height: 20),
                 Center(
                   child: SizedBox(
-                    width: 160,
+                    width: 150,
                     height: 44,
                     child: ElevatedButton(
                       onPressed: _loading ? null : _save,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green[700],
+                        backgroundColor: const Color(0xFF018D01),
+                        elevation: 4,
+                        shadowColor: Colors.black.withOpacity(0.25),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: BorderRadius.circular(15),
                         ),
                       ),
                       child: _loading
@@ -380,7 +499,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             )
                           : const Text(
                               'Save Changes',
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                     ),
                   ),
