@@ -1064,11 +1064,12 @@ class _RedeemDialog extends StatelessWidget {
         // If the user's totalPoints is missing in Firestore, treat it as 1890
         // (restore default balance). This makes vouchers redeemable by
         // users who don't yet have an explicit totalPoints field.
-        final currentPoints = (userSnap.exists &&
-            (userSnap.data() as Map<String, dynamic>)['totalPoints'] !=
-              null)
-          ? (userSnap.data() as Map<String, dynamic>)['totalPoints'] as int
-          : 1890;
+        final currentPoints =
+            (userSnap.exists &&
+                (userSnap.data() as Map<String, dynamic>)['totalPoints'] !=
+                    null)
+            ? (userSnap.data() as Map<String, dynamic>)['totalPoints'] as int
+            : 1890;
         final redeemPoints = (data['points'] ?? points) as int;
         if (currentPoints < redeemPoints) {
           throw Exception('Insufficient Agri Points to redeem this voucher.');

@@ -510,8 +510,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // ignore errors silently for now; could show SnackBar
     }
   }
-
-  
 }
 
 class _ProfileDrawer extends StatefulWidget {
