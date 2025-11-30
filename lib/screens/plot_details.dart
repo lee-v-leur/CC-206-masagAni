@@ -61,6 +61,19 @@ class _PlotDetailsPageState extends State<PlotDetailsPage> {
     'Fast Spread (Mabilis Kumalat)',
     'Dry Leaves (Natutuyong Dahon)',
     'Sclerotia/Black Spot-like (Itim na Butil-butil)',
+
+  // Available symptoms to choose from
+  final List<String> availableSymptoms = [
+    'Stunted Growth',
+    'Weak Stems',
+    'Yellow Leaves',
+    'Brown Spots',
+    'Wilting',
+    'Root Rot',
+    'Leaf Curl',
+    'Pest Infestation',
+    'Fungal Growth',
+    'Nutrient Deficiency',
   ];
 
   @override
@@ -79,6 +92,21 @@ class _PlotDetailsPageState extends State<PlotDetailsPage> {
     selectedSymptoms = ['Stunted Growth'];
     // initial diagnosis
     _currentDiagnosis = SymptomDiagnosis.diagnose(selectedSymptoms);
+    // Initialize with sample tasks
+    tasks = [
+      {
+        'date': DateTime(2024, 9, 3),
+        'label': 'Check for ...',
+        'notes': 'No notes',
+      },
+      {
+        'date': DateTime(2024, 9, 15),
+        'label': 'Check for ...',
+        'notes': 'No notes',
+      },
+    ];
+    // Initialize with sample symptoms
+    selectedSymptoms = ['Stunted Growth', 'Weak Stems'];
     // Set current week start to the beginning of the week
     currentWeekStart = _getWeekStart(DateTime.now());
   }
@@ -312,6 +340,7 @@ class _PlotDetailsPageState extends State<PlotDetailsPage> {
       taskTime = selectedTime;
     }
     String taskRepeat = task?['repeat'] ?? 'Never';
+    TimeOfDay taskTime = selectedTime;
 
     showModalBottomSheet(
       context: ctx,
@@ -462,6 +491,7 @@ class _PlotDetailsPageState extends State<PlotDetailsPage> {
                                       decoration: BoxDecoration(
                                         color: Colors.white,
                                         borderRadius: BorderRadius.circular(12),
+                                        borderRadius: BorderRadius.circular(8),
                                         border: Border.all(
                                           color: const Color(0xFF77C000),
                                           width: 1,
@@ -568,6 +598,7 @@ class _PlotDetailsPageState extends State<PlotDetailsPage> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(8),
                               border: Border.all(
                                 color: const Color(0xFF77C000),
                                 width: 1,
@@ -607,6 +638,7 @@ class _PlotDetailsPageState extends State<PlotDetailsPage> {
                             ),
                             DropdownButton<String>(
                               value: taskRepeat,
+                              value: 'Never',
                               items: const [
                                 DropdownMenuItem(
                                   value: 'Never',
@@ -626,6 +658,7 @@ class _PlotDetailsPageState extends State<PlotDetailsPage> {
                                   taskRepeat = v!;
                                 });
                               },
+                              onChanged: (_) {},
                               underline: const SizedBox.shrink(),
                             ),
                           ],
@@ -696,6 +729,29 @@ class _PlotDetailsPageState extends State<PlotDetailsPage> {
                                       );
                                     }
                                   }
+                              onPressed: () {
+                                if (titleController.text.isNotEmpty) {
+                                  setState(() {
+                                    if (task == null) {
+                                      // Add new task
+                                      tasks.add({
+                                        'date': taskDate,
+                                        'label': titleController.text,
+                                        'notes': notesController.text.isEmpty
+                                            ? 'No notes'
+                                            : notesController.text,
+                                      });
+                                    } else {
+                                      // Edit existing task
+                                      tasks[taskIndex!] = {
+                                        'date': taskDate,
+                                        'label': titleController.text,
+                                        'notes': notesController.text.isEmpty
+                                            ? 'No notes'
+                                            : notesController.text,
+                                      };
+                                    }
+                                  });
                                 }
                                 Navigator.of(ctx).pop();
                               },
@@ -1601,6 +1657,540 @@ class _PlotDetailsPageState extends State<PlotDetailsPage> {
                 ),
               ],
             ),
+    return Scaffold(
+      backgroundColor: const Color(0xFFFEFEF1),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: primaryGreen),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Editable title
+              Row(
+                children: [
+                  Text(
+                    plotTitle,
+                    style: const TextStyle(
+                      fontSize: 34,
+                      fontWeight: FontWeight.w900,
+                      color: primaryGreen,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  InkWell(
+                    onTap: () {
+                      final controller = TextEditingController(text: plotTitle);
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Edit Plot Name'),
+                          content: TextField(
+                            controller: controller,
+                            decoration: const InputDecoration(
+                              hintText: 'Plot name',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: const Text(
+                                'Cancel',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                if (controller.text.isNotEmpty) {
+                                  setState(() => plotTitle = controller.text);
+                                }
+                                Navigator.pop(ctx);
+                              },
+                              child: const Text(
+                                'Save',
+                                style: TextStyle(color: primaryGreen),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    child: const Icon(
+                      Icons.edit,
+                      color: primaryGreen,
+                      size: 18,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Calendar card
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFFFA6),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        InkWell(
+                          onTap: () => _navigateWeek(false),
+                          child: const Text(
+                            '< Prev week',
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: _showMonthCalendar,
+                          child: Text(
+                            _getMonthName(currentWeekStart.month),
+                            style: const TextStyle(
+                              color: primaryGreen,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () => _navigateWeek(true),
+                          child: const Text(
+                            'Next week >',
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: List.generate(7, (i) {
+                        final date = currentWeekStart.add(Duration(days: i));
+                        final isToday =
+                            date.year == now.year &&
+                            date.month == now.month &&
+                            date.day == now.day;
+                        final hasTask = _hasTaskOnDate(date);
+
+                        return Container(
+                          width: 40,
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          decoration: BoxDecoration(
+                            color: isToday
+                                ? primaryGreen
+                                : (hasTask ? taskRed : const Color(0xFFFFFFA6)),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: isToday
+                                  ? primaryGreen
+                                  : (hasTask ? taskRed : primaryGreen),
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                '${date.day}',
+                                style: TextStyle(
+                                  color: (isToday || hasTask)
+                                      ? Colors.white
+                                      : primaryGreen,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                [
+                                  'S',
+                                  'M',
+                                  'T',
+                                  'W',
+                                  'T',
+                                  'F',
+                                  'S',
+                                ][date.weekday % 7],
+                                style: TextStyle(
+                                  color: (isToday || hasTask)
+                                      ? Colors.white
+                                      : primaryGreen,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ),
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        daysUntilCheckup > 0
+                            ? '${daysUntilCheckup.toString().padLeft(2, '0')} days left until next check up'
+                            : 'No upcoming check ups',
+                        style: const TextStyle(color: Colors.black87),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 18),
+
+              // Tasks
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8FFC3).withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Tasks',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF018D01),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => _showEditTaskSheet(context),
+                          icon: const Icon(Icons.add, color: primaryGreen),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Column(
+                      children: tasks.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final t = entry.value;
+                        final taskDate = t['date'] as DateTime;
+
+                        return InkWell(
+                          onTap: () => _showEditTaskSheet(
+                            context,
+                            task: t,
+                            taskIndex: index,
+                          ),
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 8),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF77C000).withOpacity(0.54),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(
+                                      0xFF77C000,
+                                    ).withOpacity(0.7),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        _monthName(taskDate.month),
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                          color: Color(0xFF018D01),
+                                        ),
+                                      ),
+                                      Text(
+                                        '${taskDate.day}',
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w900,
+                                          color: Color(0xFF018D01),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        t['label'] ?? '',
+                                        style: const TextStyle(
+                                          color: Color(0xFF018D01),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        t['notes'] ?? '',
+                                        style: const TextStyle(
+                                          color: Color(0xFF018D01),
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.edit,
+                                  color: Color(0xFF018D01),
+                                  size: 20,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 18),
+
+              // Symptoms
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFCAFBAC),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const Text(
+                              'Symptoms',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF018D01),
+                              ),
+                            ),
+                            PopupMenuButton<void>(
+                              icon: const Icon(
+                                Icons.keyboard_arrow_down,
+                                color: Colors.black54,
+                              ),
+                              offset: const Offset(0, 40),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              onOpened: () {
+                                setState(() {
+                                  tempSelectedSymptoms = [];
+                                });
+                              },
+                              itemBuilder: (context) {
+                                final items = availableSymptoms
+                                    .where((s) => !selectedSymptoms.contains(s))
+                                    .map(
+                                      (symptom) => PopupMenuItem<void>(
+                                        enabled: false,
+                                        child: InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              if (tempSelectedSymptoms.contains(
+                                                symptom,
+                                              )) {
+                                                tempSelectedSymptoms.remove(
+                                                  symptom,
+                                                );
+                                              } else {
+                                                tempSelectedSymptoms.add(
+                                                  symptom,
+                                                );
+                                              }
+                                            });
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 8,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  tempSelectedSymptoms.contains(
+                                                    symptom,
+                                                  )
+                                                  ? const Color(0xFFD3EC86)
+                                                  : Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    symptom,
+                                                    style: TextStyle(
+                                                      color:
+                                                          tempSelectedSymptoms
+                                                              .contains(symptom)
+                                                          ? primaryGreen
+                                                          : Colors.black87,
+                                                      fontWeight:
+                                                          tempSelectedSymptoms
+                                                              .contains(symptom)
+                                                          ? FontWeight.w600
+                                                          : FontWeight.normal,
+                                                    ),
+                                                  ),
+                                                ),
+                                                if (tempSelectedSymptoms
+                                                    .contains(symptom))
+                                                  const Icon(
+                                                    Icons.check_circle,
+                                                    color: primaryGreen,
+                                                    size: 20,
+                                                  ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList();
+
+                                // Add Apply button at the bottom
+                                items.add(
+                                  PopupMenuItem<void>(
+                                    enabled: false,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 8),
+                                      child: SizedBox(
+                                        width: double.infinity,
+                                        child: ElevatedButton(
+                                          onPressed:
+                                              tempSelectedSymptoms.isNotEmpty
+                                              ? () {
+                                                  setState(() {
+                                                    selectedSymptoms.addAll(
+                                                      tempSelectedSymptoms,
+                                                    );
+                                                    tempSelectedSymptoms = [];
+                                                  });
+                                                  Navigator.pop(context);
+                                                }
+                                              : null,
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(
+                                              0xFFD3EC86,
+                                            ),
+                                            foregroundColor: primaryGreen,
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 24,
+                                              vertical: 12,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            elevation: 0,
+                                          ),
+                                          child: const Text(
+                                            'Apply',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+
+                                return items;
+                              },
+                            ),
+                          ],
+                        ),
+                        Text(
+                          widget.healthy
+                              ? 'Healthy'
+                              : 'Suspected Sheath Blight',
+                          style: TextStyle(
+                            color: widget.healthy
+                                ? const Color(0xFF018D01)
+                                : const Color(0xFFD21100),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Log any visible symptoms',
+                      style: TextStyle(color: Color(0xFF5D5D5D), fontSize: 12),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Display selected symptoms
+                    if (selectedSymptoms.isNotEmpty)
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: selectedSymptoms.map((symptom) {
+                          return Chip(
+                            label: Text(symptom),
+                            deleteIcon: const Icon(
+                              Icons.close,
+                              size: 18,
+                              color: Colors.white,
+                            ),
+                            onDeleted: () {
+                              setState(() {
+                                selectedSymptoms.remove(symptom);
+                              });
+                            },
+                            backgroundColor: const Color(0xFF099509),
+                            labelStyle: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),

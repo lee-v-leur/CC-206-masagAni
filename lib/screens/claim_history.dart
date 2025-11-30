@@ -12,6 +12,10 @@ class ClaimHistoryScreen extends StatelessWidget {
 
     final uid = FirebaseAuth.instance.currentUser?.uid;
 
+    
+    // TODO: Replace with actual redeemed vouchers from database
+    final List<Map<String, dynamic>> redeemedVouchers = [];
+    
     return Scaffold(
       backgroundColor: backgroundColor,
       body: SafeArea(
@@ -36,6 +40,7 @@ class ClaimHistoryScreen extends StatelessWidget {
               ),
             ),
 
+            
             // Claim History title
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
@@ -55,6 +60,12 @@ class ClaimHistoryScreen extends StatelessWidget {
             // Content: show user's claim history (created by trusted server/function)
             Expanded(
               child: uid == null
+            
+            const SizedBox(height: 24),
+            
+            // Content
+            Expanded(
+              child: redeemedVouchers.isEmpty
                   ? Center(
                       child: Padding(
                         padding: const EdgeInsets.all(32),
@@ -73,6 +84,12 @@ class ClaimHistoryScreen extends StatelessWidget {
                                 fontSize: 20,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.grey,
+                            Text(
+                              'No Redeemed Vouchers Yet',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[700],
                               ),
                               textAlign: TextAlign.center,
                             ),
@@ -82,6 +99,11 @@ class ClaimHistoryScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey,
+                            Text(
+                              'You haven\'t redeemed any vouchers yet. Start earning Agri Points and redeem your first reward!',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[600],
                                 height: 1.5,
                               ),
                               textAlign: TextAlign.center,
@@ -210,6 +232,18 @@ class ClaimHistoryScreen extends StatelessWidget {
                                   : '',
                             );
                           },
+                  : ListView.separated(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: redeemedVouchers.length,
+                      separatorBuilder: (context, index) => const SizedBox(height: 16),
+                      itemBuilder: (context, index) {
+                        final voucher = redeemedVouchers[index];
+                        return _RedeemedVoucherCard(
+                          title: voucher['title'] as String,
+                          description: voucher['description'] as String,
+                          descriptionSubtext: voucher['descriptionSubtext'] as String?,
+                          points: voucher['points'] as int,
+                          redeemedDate: voucher['redeemedDate'] as String,
                         );
                       },
                     ),
@@ -240,11 +274,16 @@ class _RedeemedVoucherCard extends StatelessWidget {
   Widget build(BuildContext context) {
     const Color cardBorder = Color(0xFFE8D78C);
 
+    
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFFEFEF1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: cardBorder, width: 2),
+        border: Border.all(
+          color: cardBorder,
+          width: 2,
+        ),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFFD4AF37).withOpacity(0.3),
@@ -274,6 +313,9 @@ class _RedeemedVoucherCard extends StatelessWidget {
 
           const SizedBox(width: 12),
 
+          
+          const SizedBox(width: 12),
+          
           // Content
           Expanded(
             child: Column(
@@ -307,6 +349,9 @@ class _RedeemedVoucherCard extends StatelessWidget {
 
                 const SizedBox(height: 6),
 
+                
+                const SizedBox(height: 6),
+                
                 // Description
                 Text(
                   description,
@@ -317,6 +362,7 @@ class _RedeemedVoucherCard extends StatelessWidget {
                   ),
                 ),
 
+                
                 if (descriptionSubtext != null) ...[
                   Text(
                     descriptionSubtext!,
@@ -331,6 +377,8 @@ class _RedeemedVoucherCard extends StatelessWidget {
 
                 const SizedBox(height: 8),
 
+               
+                
                 // Redeemed date
                 Text(
                   'Redeemed on $redeemedDate',
@@ -341,8 +389,9 @@ class _RedeemedVoucherCard extends StatelessWidget {
                   ),
                 ),
 
+                
                 const SizedBox(height: 12),
-
+                
                 // Redeemed button (disabled)
                 Align(
                   alignment: Alignment.centerRight,

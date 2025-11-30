@@ -48,6 +48,7 @@ class FavoritesScreen extends StatelessWidget {
               ),
             ),
 
+            
             const SizedBox(height: 16),
 
             // List of favorite articles
@@ -74,6 +75,7 @@ class FavoritesScreen extends StatelessWidget {
                         final entry = favoritedArticles.entries.elementAt(
                           index,
                         );
+                        final entry = favoritedArticles.entries.elementAt(index);
                         final title = entry.key;
                         final article = entry.value;
                         return _FavoriteArticleCard(
@@ -212,6 +214,67 @@ class _FavoriteArticleCard extends StatelessWidget {
               ),
             ),
           ],
+        children: [
+          // Article thumbnail
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.asset(
+              image,
+              width: 88,
+              height: 88,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                width: 88,
+                height: 88,
+                color: Colors.green[200],
+                child: const Icon(Icons.image, size: 32, color: Colors.white),
+              ),
+            ),
+          ),
+          
+          const SizedBox(width: 12),
+          
+          // Article details
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                    height: 1.3,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '$author  •  $date',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Bookmark icon
+          Container(
+            margin: const EdgeInsets.only(left: 8),
+            child: GestureDetector(
+              onTap: onToggleFavorite,
+              child: const Icon(
+                Icons.bookmark,
+                color: Color(0xFF099509),
+                size: 24,
+              ),
+            ),
+          ),
+        ],
         ),
       ),
     );
