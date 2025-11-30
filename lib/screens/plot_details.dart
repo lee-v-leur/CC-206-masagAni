@@ -1556,7 +1556,19 @@ class _PlotDetailsPageState extends State<PlotDetailsPage> {
                                     (scores[b] ?? 0).compareTo(scores[a] ?? 0),
                               );
                               final top = suspects.take(3).toList();
-                              final label = top.join(', ');
+                              // Format the top suspects into up to two visual lines
+                              String label;
+                              if (top.isEmpty) {
+                                label = '';
+                              } else if (top.length == 1) {
+                                label = top.first;
+                              } else {
+                                // split into two roughly-equal parts and join with a newline
+                                final split = (top.length / 2).ceil();
+                                final first = top.sublist(0, split).join(', ');
+                                final second = top.sublist(split).join(', ');
+                                label = second.isNotEmpty ? '$first\n$second' : first;
+                              }
 
                               return Text(
                                 label.isEmpty ? 'Suspected' : label,

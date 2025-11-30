@@ -120,10 +120,6 @@ class WelcomeScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(5),
                       ),
                     ),
-                    child: const Text(
-                      "Sign Up",
-                      style: TextStyle(fontSize: 16, color: Colors.white),
-                    ),
                   ),
                 ),
               ],

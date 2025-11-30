@@ -85,6 +85,35 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // Password reset requests (global): allow unauthenticated clients to
+    // create a minimal reset request record. Clients may NOT read/update/delete.
+    // This is intended for sending password-reset emails; server-side code
+    // should verify and act on these documents if you use them that way.
+    match /password_resets/{reqId} {
+      allow create: if
+        // required keys
+        request.resource.data.keys().hasAll(['email','createdAt'])
+        // types
+        && request.resource.data.email is string
+        && request.resource.data.createdAt is timestamp;
+
+      // disallow client reads/updates/deletes
+      allow read, update, delete: if false;
+    }
+
+    // Per-user password reset records: allow an authenticated owner to create
+    // and read their own password reset entries (for auditing or in-app flows).
+    match /users/{userId}/password_resets/{reqId} {
+      allow create: if request.auth != null
+                    && request.auth.uid == userId
+                    && request.resource.data.keys().hasAll(['createdAt','reason'])
+                    && request.resource.data.createdAt is timestamp
+                    && request.resource.data.reason is string;
+
+      allow get, list: if request.auth != null && request.auth.uid == userId;
+      allow update, delete: if false;
+    }
+
     // Fallback: deny everything else by default
     // Explicitly deny any other access not covered above.
     match /{document=**} {

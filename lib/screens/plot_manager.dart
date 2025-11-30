@@ -40,11 +40,6 @@ class _PlotManagerPageState extends State<PlotManagerPage> {
         'age': '20 weeks old',
         'healthy': true,
       },
-      'Plot B': {
-        'variety': 'Jasmine Rice',
-        'age': '20 weeks old',
-        'healthy': false,
-      },
     };
 
     final info = map[title];
@@ -214,7 +209,22 @@ class PlotManagerPage extends StatelessWidget {
                 if (doc.exists) {
                   final data = doc.data();
                   if (data != null && data['status'] != null) {
-                    _staticPlotStatus[title] = data['status'] as String;
+                    final rawStatus = data['status'] as String;
+                    final parts = rawStatus
+                        .split(',')
+                        .map((s) => s.trim())
+                        .where((s) => s.isNotEmpty)
+                        .toList();
+                    if (parts.length <= 1) {
+                      _staticPlotStatus[title] = rawStatus;
+                    } else {
+                      final split = (parts.length / 2).ceil();
+                      final first = parts.sublist(0, split).join(', ');
+                      final second = parts.sublist(split).join(', ');
+                      _staticPlotStatus[title] = second.isNotEmpty
+                          ? '$first\n$second'
+                          : first;
+                    }
                   }
                 }
               } catch (_) {}
@@ -375,8 +385,6 @@ class PlotManagerPage extends StatelessWidget {
                   Expanded(
                     child: ListView(
                       children: [
-                        // (Example plots removed)
-
                         // Divider between static examples and user plots
                         const SizedBox(height: 8),
                         const Divider(),

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'favorites.dart';
 import 'article.dart';
-import 'homepage.dart';
-import 'plot_manager.dart';
 import 'profile.dart';
-import 'welcome_screen.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -22,13 +19,11 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   
   // Filter options
   String _sortBy = 'mostRecent';
-  Set<String> _selectedLanguages = {};
   Set<String> _selectedDiseases = {};
 
   
   // Initial filter state
   String _initialSortBy = 'mostRecent';
-  Set<String> _initialLanguages = {};
   Set<String> _initialDiseases = {};
 
   
@@ -70,6 +65,50 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     }).toList();
   }
 
+  Widget _buildFilteredArticleList() {
+    final filteredArticles = _filteredArticles;
+    if (filteredArticles.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 32),
+        child: Column(
+          children: const [
+            Icon(Icons.inbox_outlined, color: Colors.grey, size: 36),
+            SizedBox(height: 12),
+            Text(
+              'No articles match your filters yet.',
+              style: TextStyle(color: Colors.black54, fontSize: 14),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        for (final article in filteredArticles) ...[
+          _ArticleCard(
+            image: article.image,
+            title: article.title,
+            author: article.author,
+            date: article.displayDate,
+            isFavorited: _favoritedArticles.containsKey(article.title),
+            onToggleFavorite: () => _toggleFavorite(
+              article.title,
+              article.image,
+              article.author,
+              article.displayDate,
+            ),
+            favoritedArticles: _favoritedArticles,
+            onToggleFavoriteGlobal: _toggleFavorite,
+          ),
+          const SizedBox(height: 16),
+        ],
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+
   bool get _hasFilterChanges {
     return _sortBy != _initialSortBy ||
         !_selectedLanguages.difference(_initialLanguages).isEmpty ||
@@ -84,6 +123,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
            !_selectedDiseases.difference(_initialDiseases).isEmpty ||
            !_initialDiseases.difference(_selectedDiseases).isEmpty;
   }
+
+  bool _setsEqual(Set<String> a, Set<String> b) =>
+      a.length == b.length && a.containsAll(b);
 
   @override
   Widget build(BuildContext context) {
@@ -297,103 +339,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   // For You list
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      children: [
-                        _ArticleCard(
-                          image: 'assets/images/educ/rice_immunity.jpg',
-                          title: 'Simple Ways to Boost Rice Immunity Naturally',
-                          author: 'McKinley, A.',
-                          date: 'January 27, 2014',
-                          isFavorited: _favoritedArticles.containsKey(
-                            'Simple Ways to Boost Rice Immunity Naturally',
-                          ),
-                          onToggleFavorite: () => _toggleFavorite(
-                            'Simple Ways to Boost Rice Immunity Naturally',
-                            'assets/images/educ/rice_immunity.jpg',
-                            'McKinley, A.',
-                            'January 27, 2014',
-                          ),
-                          favoritedArticles: _favoritedArticles,
-                          onToggleFavoriteGlobal: _toggleFavorite,
-                        ),
-                        const SizedBox(height: 16),
-                        _ArticleCard(
-                          image: 'assets/images/educ/soil_care.jpg',
-                          title: 'Proper Soil Care for Stronger Rice Plants',
-                          author: 'Junior, Q.',
-                          date: 'April 16, 2011',
-                          isFavorited: _favoritedArticles.containsKey(
-                            'Proper Soil Care for Stronger Rice Plants',
-                          ),
-                          onToggleFavorite: () => _toggleFavorite(
-                            'Proper Soil Care for Stronger Rice Plants',
-                            'assets/images/educ/soil_care.jpg',
-                            'Junior, Q.',
-                            'April 16, 2011',
-                          ),
-                          favoritedArticles: _favoritedArticles,
-                          onToggleFavoriteGlobal: _toggleFavorite,
-                        ),
-                        const SizedBox(height: 16),
-                        _ArticleCard(
-                          image: 'assets/images/educ/sheath_blight.jpg',
-                          title:
-                              'Hidden Under the Leaves: Detecting Sheath Blight Early',
-                          author: 'Campbell, J.',
-                          date: 'February 22, 2015',
-                          isFavorited: _favoritedArticles.containsKey(
-                            'Hidden Under the Leaves: Detecting Sheath Blight Early',
-                          ),
-                          onToggleFavorite: () => _toggleFavorite(
-                            'Hidden Under the Leaves: Detecting Sheath Blight Early',
-                            'assets/images/educ/sheath_blight.jpg',
-                            'Campbell, J.',
-                            'February 22, 2015',
-                          ),
-                          favoritedArticles: _favoritedArticles,
-                          onToggleFavoriteGlobal: _toggleFavorite,
-                        ),
-                        const SizedBox(height: 16),
-                        _ArticleCard(
-                          image: 'assets/images/educ/heat_stress.jpg',
-                          title:
-                              'Is It Just Heat Stress or Rice Yellowing Syndrome?',
-                          author: 'Keung, H.',
-                          date: 'December 1, 2022',
-                          isFavorited: _favoritedArticles.containsKey(
-                            'Is It Just Heat Stress or Rice Yellowing Syndrome?',
-                          ),
-                          onToggleFavorite: () => _toggleFavorite(
-                            'Is It Just Heat Stress or Rice Yellowing Syndrome?',
-                            'assets/images/educ/heat_stress.jpg',
-                            'Keung, H.',
-                            'December 1, 2022',
-                          ),
-                          favoritedArticles: _favoritedArticles,
-                          onToggleFavoriteGlobal: _toggleFavorite,
-                        ),
-                        const SizedBox(height: 16),
-                        _ArticleCard(
-                          image: 'assets/images/educ/brown_spot.jpg',
-                          title:
-                              'Spotting Brown Spot Disease Before It Spreads',
-                          author: 'Rodriguez, L.',
-                          date: 'March 8, 2018',
-                          isFavorited: _favoritedArticles.containsKey(
-                            'Spotting Brown Spot Disease Before It Spreads',
-                          ),
-                          onToggleFavorite: () => _toggleFavorite(
-                            'Spotting Brown Spot Disease Before It Spreads',
-                            'assets/images/educ/brown_spot.jpg',
-                            'Rodriguez, L.',
-                            'March 8, 2018',
-                          ),
-                          favoritedArticles: _favoritedArticles,
-                          onToggleFavoriteGlobal: _toggleFavorite,
-                        ),
-                        const SizedBox(height: 24),
-                      ],
-                    ),
+                    child: _buildFilteredArticleList(),
                   ),
                 ],
               ),
@@ -686,31 +632,17 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                     color: Color(0xFFE0E0E0),
                                   ),
 
-                                  // Language section
-                                  _buildFilterSection('Language', [
-                                    _buildCheckboxOption('English', 'english'),
-                                    _buildCheckboxOption(
-                                      'Filipino',
-                                      'filipino',
-                                    ),
-                                  ]),
-
-                                  const Divider(
-                                    height: 1,
-                                    color: Color(0xFFE0E0E0),
-                                  ),
-
                                   // Disease section
                                   _buildFilterSection('Disease', [
-                                    _buildCheckboxOption(
+                                    _buildDiseaseCheckboxOption(
                                       'Rice Yellowing Syndrome',
                                       'yellowing',
                                     ),
-                                    _buildCheckboxOption(
+                                    _buildDiseaseCheckboxOption(
                                       'Sheath Blight',
                                       'sheath',
                                     ),
-                                    _buildCheckboxOption(
+                                    _buildDiseaseCheckboxOption(
                                       'Brown Spot Disease',
                                       'brownspot',
                                     ),
@@ -748,9 +680,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                                   _showFilterOverlay = false;
                                                   // Save current state as initial
                                                   _initialSortBy = _sortBy;
-                                                  _initialLanguages = Set.from(
-                                                    _selectedLanguages,
-                                                  );
                                                   _initialDiseases = Set.from(
                                                     _selectedDiseases,
                                                   );
@@ -891,11 +820,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     );
   }
 
-  Widget _buildCheckboxOption(String label, String value) {
-    final isLanguage = value == 'english' || value == 'filipino';
-    final isSelected = isLanguage
-        ? _selectedLanguages.contains(value)
-        : _selectedDiseases.contains(value);
+  Widget _buildDiseaseCheckboxOption(String label, String value) {
+    final isSelected = _selectedDiseases.contains(value);
 
                 style: TextStyle(
                   fontSize: 13,
@@ -918,18 +844,10 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          if (isLanguage) {
-            if (_selectedLanguages.contains(value)) {
-              _selectedLanguages.remove(value);
-            } else {
-              _selectedLanguages.add(value);
-            }
+          if (isSelected) {
+            _selectedDiseases.remove(value);
           } else {
-            if (_selectedDiseases.contains(value)) {
-              _selectedDiseases.remove(value);
-            } else {
-              _selectedDiseases.add(value);
-            }
+            _selectedDiseases.add(value);
           }
         });
       },
@@ -1240,144 +1158,13 @@ class _ArticleCard extends StatelessWidget {
   }
 }
 
-// Drawer used by Discover screen (styling and behavior mirror other screens)
-class DiscoverMenuDrawer extends StatefulWidget {
-  const DiscoverMenuDrawer({Key? key}) : super(key: key);
-
-  @override
-  State<DiscoverMenuDrawer> createState() => _DiscoverMenuDrawerState();
-}
-
-class _DiscoverMenuDrawerState extends State<DiscoverMenuDrawer> {
-  String _selected = 'Discover';
-
-  void _select(String label) {
-    setState(() {
-      _selected = label;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child: Container(
-        color: const Color(0xFFFFFFD6),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 8.0, bottom: 18),
-                    child: Image.asset(
-                      'assets/images/masagani_logoname.png',
-                      height: 60,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                _DiscoverDrawerHoverTile(
-                  label: 'Home',
-                  selected: _selected == 'Home',
-                  onTap: () {
-                    _select('Home');
-                    Navigator.of(context).pop();
-                    Navigator.of(
-                      context,
-                    ).push(MaterialPageRoute(builder: (_) => const HomePage()));
-                  },
-                ),
-                _DiscoverDrawerHoverTile(
-                  label: 'Plots',
-                  selected: _selected == 'Plots',
-                  onTap: () {
-                    _select('Plots');
-                    Navigator.of(context).pop();
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const PlotManagerPage(),
-                      ),
-                    );
-                  },
-                ),
-                _DiscoverDrawerHoverTile(
-                  label: 'Discover',
-                  selected: _selected == 'Discover',
-                  onTap: () {
-                    _select('Discover');
-                    Navigator.of(context).pop();
-                  },
-                ),
-                _DiscoverDrawerHoverTile(
-                  label: 'Profile',
-                  selected: _selected == 'Profile',
-                  onTap: () {
-                    _select('Profile');
-                    Navigator.of(context).pop();
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                    );
-                  },
-                ),
-                const Spacer(),
-                const Divider(),
-                _DiscoverDrawerHoverTile(
-                  label: 'Log out',
-                  leading: const Icon(Icons.logout, color: Color(0xFF0B8A12)),
-                  onTap: () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                        builder: (_) => const WelcomeScreen(title: 'masagAni'),
-                      ),
-                      (route) => false,
-                    );
-                  },
-                  isLogout: true,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _DiscoverDrawerHoverTile extends StatefulWidget {
-  final String label;
-  final Widget? leading;
-  final VoidCallback? onTap;
-  final bool selected;
-  final bool isLogout;
-
-  const _DiscoverDrawerHoverTile({
-    Key? key,
-    required this.label,
-    this.leading,
-    this.onTap,
-    this.selected = false,
-    this.isLogout = false,
-  }) : super(key: key);
-
-  @override
-  State<_DiscoverDrawerHoverTile> createState() =>
-      _DiscoverDrawerHoverTileState();
-}
-
-class _DiscoverDrawerHoverTileState extends State<_DiscoverDrawerHoverTile> {
-  bool _hovering = false;
-  bool _pressing = false;
-
-  void _onEnter(PointerEvent _) => setState(() => _hovering = true);
-  void _onExit(PointerEvent _) => setState(() => _hovering = false);
-
-  @override
-  Widget build(BuildContext context) {
-    const hoverBg = Color(0xFFF9ED96);
-    final bool highlight = widget.selected || _hovering || _pressing;
+class _ArticleData {
+  final String image;
+  final String title;
+  final String author;
+  final String displayDate;
+  final DateTime published;
+  final Set<String> diseaseTags;
 
     return MouseRegion(
       onEnter: _onEnter,
