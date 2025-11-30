@@ -100,22 +100,43 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 15),
+                const SizedBox(height: 12),
 
-                // SIGN UP LINK (navigates to signup)
+                // SIGN UP LINK (navigates to signup). Use RichText so the
+                // question is white and the "Sign Up" part is highlighted.
                 SizedBox(
-                  width: 220,
-                  height: 50,
+                  width: 300,
                   child: Center(
                     child: GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(_createSignupRoute());
                       },
-                      child: const Text(
-                        'Or sign up here.',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF099509),
+                      child: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: "Don't have an account? ",
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: const Color.fromARGB(160, 5, 0, 0),
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black.withOpacity(0.45),
+                                    offset: Offset(0, 1),
+                                    blurRadius: 3,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            TextSpan(
+                              text: 'Sign Up.',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Color(0xFF099509),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
