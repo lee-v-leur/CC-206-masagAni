@@ -510,6 +510,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // ignore errors silently for now; could show SnackBar
     }
   }
+
+  
 }
 
 class _ProfileDrawer extends StatefulWidget {
@@ -594,6 +596,7 @@ class _ProfileDrawerState extends State<_ProfileDrawer> {
                     Navigator.of(context).pop();
                   },
                 ),
+
                 const Spacer(),
                 const Divider(),
                 _HoverListTile(
@@ -615,6 +618,30 @@ class _ProfileDrawerState extends State<_ProfileDrawer> {
         ),
       ),
     );
+  }
+
+  Future<void> _resetPoints() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Not signed in')));
+      return;
+    }
+
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'totalPoints': 1890,
+      }, SetOptions(merge: true));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('totalPoints reset to 1890')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to reset points: $e')));
+    }
   }
 }
 
