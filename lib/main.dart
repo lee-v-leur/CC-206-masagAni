@@ -1,14 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart'; 
-import 'screens/welcome_screen.dart'; 
+import 'firebase_options.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'screens/welcome_screen.dart';
+import 'package:provider/provider.dart';
+import 'models/streak_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+  // Initialize Firebase using the generated options for the current platform.
+  // This uses `firebase_options.dart` so the same initialization works across
+  // web and native platforms.
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(
+    ChangeNotifierProvider<StreakModel>(
+      create: (_) {
+        final m = StreakModel();
+        m.init();
+        return m;
+      },
+      child: const MyApp(),
+    ),
   );
-  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
