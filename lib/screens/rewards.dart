@@ -1141,10 +1141,14 @@ class _RedeemDialog extends StatelessWidget {
           throw Exception('Insufficient Agri Points to redeem this voucher.');
         }
 
-        // decrement user's totalPoints
-        tx.update(userRef, {
-          'totalPoints': FieldValue.increment(-redeemPoints),
-        });
+        // compute new total based on the transaction-read value and write
+        // the explicit new value. This avoids relying on FieldValue.increment
+        // which treats a missing field as 0 (causing -300 when we expect
+        // a default starting balance of 1890).
+        final newTotal = currentPoints - redeemPoints;
+        tx.set(userRef, {
+          'totalPoints': newTotal,
+        }, SetOptions(merge: true));
 
         // mark reward used and set redeemedAt (server timestamp)
         tx.update(rewardRef, {
