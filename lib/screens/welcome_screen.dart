@@ -102,42 +102,22 @@ class WelcomeScreen extends StatelessWidget {
 
                 const SizedBox(height: 12),
 
-                // SIGN UP LINK (navigates to signup). Use RichText so the
-                // question is white and the "Sign Up" part is highlighted.
+                // SIGN UP BUTTON (navigates to signup)
+                // SIGN UP BUTTON (navigate to signup)
                 SizedBox(
-                  width: 300,
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(_createSignupRoute());
-                      },
-                      child: RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "Don't have an account? ",
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: const Color.fromARGB(160, 5, 0, 0),
-                                shadows: [
-                                  Shadow(
-                                    color: Colors.black.withOpacity(0.45),
-                                    offset: Offset(0, 1),
-                                    blurRadius: 3,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            TextSpan(
-                              text: 'Sign Up.',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Color(0xFF099509),
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
+                  width: 220,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(_createSignupRoute());
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const SignupScreen()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF099509).withOpacity(0.75),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
                       ),
                     ),
                   ),
