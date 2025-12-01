@@ -397,14 +397,8 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         ),
                         const SizedBox(height: 28),
                       ] else ...[
-                        const Text(
-                          'Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.',
-                          textAlign: TextAlign.justify,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black87,
-                            height: 1.6,
-                          ),
+                        _buildDiseaseIntro(
+                          'This article provides valuable insights and practical knowledge for rice farmers and agricultural professionals. Our team continuously researches and compiles information to help improve rice cultivation practices.',
                         ),
                         const SizedBox(height: 24),
                       ],
@@ -492,60 +486,28 @@ class _ArticleScreenState extends State<ArticleScreen> {
                           Row(
                             children: [
                               Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => _ImageGallery(
-                                          initialIndex: 0,
-                                          imagePaths: const [
-                                            'assets/images/diseases/rys/rysdiagnosis.jpg',
-                                            'assets/images/diseases/rys/ryscomp.jpg',
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.asset(
-                                      'assets/images/diseases/rys/rysdiagnosis.jpg',
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => Container(
-                                        height: 200,
-                                        color: Colors.green[200],
-                                      ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.asset(
+                                    'assets/images/diseases/rys/rysdiagnosis.jpg',
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Container(
+                                      height: 200,
+                                      color: Colors.green[200],
                                     ),
                                   ),
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => _ImageGallery(
-                                          initialIndex: 1,
-                                          imagePaths: const [
-                                            'assets/images/diseases/rys/rysdiagnosis.jpg',
-                                            'assets/images/diseases/rys/ryscomp.jpg',
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.asset(
-                                      'assets/images/diseases/rys/ryscomp.jpg',
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => Container(
-                                        height: 200,
-                                        color: Colors.green[200],
-                                      ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.asset(
+                                    'assets/images/diseases/rys/ryscomp.jpg',
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Container(
+                                      height: 200,
+                                      color: Colors.green[200],
                                     ),
                                   ),
                                 ),
@@ -558,17 +520,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             style: TextStyle(fontSize: 10, color: Colors.black54, fontStyle: FontStyle.italic),
                           ),
                           const SizedBox(height: 28),
-                        ] else ...[
-                          const Text(
-                            'Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper',
-                            textAlign: TextAlign.justify,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black87,
-                              height: 1.6,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
                         ],
                       ],
                       
@@ -1064,7 +1015,11 @@ class _ArticleScreenState extends State<ArticleScreen> {
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(8),
                                     child: Image.asset(
-                                      'assets/images/diseases/rys/sheathcover.jpg',
+                                      isBrownSpot || isBrownSpotEarly
+                                          ? 'assets/images/diseases/brown/brown5.webp'
+                                          : isSheathBlight
+                                          ? 'assets/images/diseases/sb/sb2.jpg'
+                                          : 'assets/images/diseases/rys/sheathcover.jpg',
                                       height: 76,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
@@ -1078,7 +1033,11 @@ class _ArticleScreenState extends State<ArticleScreen> {
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(8),
                                     child: Image.asset(
-                                      'assets/images/educ/rys_home.jpg',
+                                      isBrownSpot || isBrownSpotEarly
+                                          ? 'assets/images/diseases/brown/brown6.webp'
+                                          : isSheathBlight
+                                          ? 'assets/images/diseases/sb/sbb.png'
+                                          : 'assets/images/educ/rys_home.jpg',
                                       height: 76,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
@@ -1093,7 +1052,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             ),
                           ],
                         ),
-                      if (!isRYS) ...[
+                      if (!isDiseaseArticle &&
+                          !isBoostImmunity &&
+                          !isSoilCare) ...[
                         const SizedBox(height: 20),
                         const Text(
                           'Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.',
@@ -1285,7 +1246,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
         'date': 'February 22, 2015',
       },
       {
-        'image': 'assets/images/diseases/rys/ryspaddy.png',
+        'image': 'assets/images/educ/is-it-just-heat.jpg',
         'title': 'Is It Just Heat Stress or Rice Yellowing Syndrome?',
         'author': 'Keung, H.',
         'date': 'December 1, 2022',

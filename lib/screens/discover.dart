@@ -82,10 +82,10 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   List<Widget> _buildFavoriteCards() {
     return _favoritedArticles.entries.map((entry) {
       return _FavoriteCard(
-        image: entry.value['image']!,
-        title: entry.key,
-        author: entry.value['author']!,
-        date: entry.value['date']!,
+        image: disease.image,
+        title: disease.title,
+        author: disease.author,
+        date: disease.displayDate,
         favoritedArticles: _favoritedArticles,
         onToggleFavoriteGlobal: _toggleFavorite,
         onRefresh: _loadFavorites,
@@ -223,49 +223,16 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
                   const SizedBox(height: 24),
 
-                  // Favorites carousel
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Favorites',
-                          style: TextStyle(
-                            color: Color(0xFF8BC34A),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => FavoritesScreen(
-                                  favoritedArticles: _favoritedArticles,
-                                  onToggleFavorite: _toggleFavorite,
-                                ),
-                              ),
-                            ).then((_) => _loadFavorites());
-                          },
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(0, 0),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: const Text(
-                            'View all',
-                            style: TextStyle(
-                              color: Color(0xFF8BC34A),
-                              fontSize: 12,
-                              decoration: TextDecoration.underline,
-                              decorationColor: Color(0xFF8BC34A),
-                              decorationThickness: 1,
-                            ),
-                          ),
-                        ),
-                      ],
+                  // Featured diseases carousel
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    child: Text(
+                      'Featured Diseases',
+                      style: TextStyle(
+                        color: Color(0xFF8BC34A),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
 
@@ -273,52 +240,37 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
                   SizedBox(
                     height: 200,
-                    child: _favoritedArticles.isEmpty
-                        ? Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(24.0),
-                              child: Text(
-                                'No favorites yet. Tap the bookmark icon on articles to add them here!',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          )
-                        : PageView(
-                            controller: _pageController,
-                            padEnds: false,
-                            onPageChanged: (index) {
-                              setState(() {
-                                _currentPage = index;
-                              });
-                            },
-                            children: _buildFavoriteCards(),
-                          ),
+                    child: PageView(
+                      controller: _pageController,
+                      padEnds: false,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentPage = index;
+                        });
+                      },
+                      children: _buildDiseaseCards(),
+                    ),
                   ),
 
                   const SizedBox(height: 12),
 
-                  if (_favoritedArticles.isNotEmpty)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        _favoritedArticles.length,
-                        (index) => Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: _currentPage == index
-                                ? const Color(0xFF8BC34A)
-                                : Colors.grey[400],
-                          ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      _featuredDiseases.length,
+                      (index) => Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _currentPage == index
+                              ? const Color(0xFF8BC34A)
+                              : Colors.grey[400],
                         ),
                       ),
                     ),
+                  ),
 
                   const SizedBox(height: 24),
 
