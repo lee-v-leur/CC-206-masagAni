@@ -914,7 +914,7 @@ class _RedeemDialog extends StatelessWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withAlpha((0.3 * 255).round()),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     ),
@@ -1146,9 +1146,7 @@ class _RedeemDialog extends StatelessWidget {
         // which treats a missing field as 0 (causing -300 when we expect
         // a default starting balance of 1890).
         final newTotal = currentPoints - redeemPoints;
-        tx.set(userRef, {
-          'totalPoints': newTotal,
-        }, SetOptions(merge: true));
+        tx.set(userRef, {'totalPoints': newTotal}, SetOptions(merge: true));
 
         // mark reward used and set redeemedAt (server timestamp)
         tx.update(rewardRef, {

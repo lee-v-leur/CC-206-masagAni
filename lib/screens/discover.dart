@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'favorites.dart';
 import 'article.dart';
 import 'profile.dart';
+import 'homepage.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -19,12 +22,14 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   
   // Filter options
   String _sortBy = 'mostRecent';
-  Set<String> _selectedDiseases = {};
+  final Set<String> _selectedDiseases = {};
+  final Set<String> _selectedLanguages = {};
 
   
   // Initial filter state
   String _initialSortBy = 'mostRecent';
   Set<String> _initialDiseases = {};
+  Set<String> _initialLanguages = {};
 
   
   // Favorited articles tracking
@@ -39,7 +44,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   
   void _toggleFavorite(String title, String image, String author, String date) {
     setState(() {
-      if (_favoritedArticles.containsKey(title)) {
+      if (isRemoving) {
         _favoritedArticles.remove(title);
       } else {
         _favoritedArticles[title] = {
@@ -49,6 +54,28 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         };
       }
     });
+
+    // Save to Firestore - update individual field instead of replacing whole document
+    try {
+      final docRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('favorites')
+          .doc('articles');
+
+      if (isRemoving) {
+        print('Removing bookmark: $title');
+        await docRef.update({title: FieldValue.delete()});
+      } else {
+        print('Adding bookmark: $title');
+        await docRef.set({
+          title: {'image': image, 'author': author, 'date': date},
+        }, SetOptions(merge: true));
+      }
+      print('Bookmark saved successfully');
+    } catch (e) {
+      print('Error toggling favorite in discover.dart: $e');
+    }
   }
 
   
@@ -61,52 +88,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         date: entry.value['date']!,
         favoritedArticles: _favoritedArticles,
         onToggleFavoriteGlobal: _toggleFavorite,
+        onRefresh: _loadFavorites,
       );
     }).toList();
-  }
-
-  Widget _buildFilteredArticleList() {
-    final filteredArticles = _filteredArticles;
-    if (filteredArticles.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 32),
-        child: Column(
-          children: const [
-            Icon(Icons.inbox_outlined, color: Colors.grey, size: 36),
-            SizedBox(height: 12),
-            Text(
-              'No articles match your filters yet.',
-              style: TextStyle(color: Colors.black54, fontSize: 14),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Column(
-      children: [
-        for (final article in filteredArticles) ...[
-          _ArticleCard(
-            image: article.image,
-            title: article.title,
-            author: article.author,
-            date: article.displayDate,
-            isFavorited: _favoritedArticles.containsKey(article.title),
-            onToggleFavorite: () => _toggleFavorite(
-              article.title,
-              article.image,
-              article.author,
-              article.displayDate,
-            ),
-            favoritedArticles: _favoritedArticles,
-            onToggleFavoriteGlobal: _toggleFavorite,
-          ),
-          const SizedBox(height: 16),
-        ],
-        const SizedBox(height: 24),
-      ],
-    );
   }
 
   bool get _hasFilterChanges {
@@ -133,6 +117,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     const Color primaryGreen = Color(0xFF099509);
 
     return Scaffold(
+      drawer: const AppMenuDrawer(),
       backgroundColor: backgroundColor,
       drawer: const DiscoverMenuDrawer(),
     
@@ -165,6 +150,24 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                               ),
                             );
                           },
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FavoritesScreen(
+                                  favoritedArticles: _favoritedArticles,
+                                  onToggleFavorite: _toggleFavorite,
+                                ),
+                              ),
+                            ).then((_) => _loadFavorites());
+                          },
+                          icon: const Icon(
+                            Icons.bookmark,
+                            color: primaryGreen,
+                            size: 28,
+                          ),
                         ),
                       ],
                     ),
@@ -220,7 +223,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
                   const SizedBox(height: 24),
 
-                  // Favorites section
+                  // Favorites carousel
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Row(
@@ -244,7 +247,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                   onToggleFavorite: _toggleFavorite,
                                 ),
                               ),
-                            ).then((_) => setState(() {}));
+                            ).then((_) => _loadFavorites());
                           },
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
@@ -268,7 +271,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
                   const SizedBox(height: 12),
 
-                  // Horizontal scrollable favorites
                   SizedBox(
                     height: 200,
                     child: _favoritedArticles.isEmpty
@@ -299,7 +301,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
                   const SizedBox(height: 12),
 
-                  // Dots indicator
                   if (_favoritedArticles.isNotEmpty)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -321,7 +322,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
                   const SizedBox(height: 24),
 
-                  // For You section
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 24),
                     child: Text(
@@ -336,11 +336,37 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
                   const SizedBox(height: 16),
 
-                  // For You list
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: _buildFilteredArticleList(),
+                    child: Column(
+                      children: _filteredArticles
+                          .map(
+                            (a) => Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: _ArticleCard(
+                                image: a.image,
+                                title: a.title,
+                                author: a.author,
+                                date: a.displayDate,
+                                isFavorited: _favoritedArticles.containsKey(
+                                  a.title,
+                                ),
+                                onToggleFavorite: () => _toggleFavorite(
+                                  a.title,
+                                  a.image,
+                                  a.author,
+                                  a.displayDate,
+                                ),
+                                favoritedArticles: _favoritedArticles,
+                                onToggleFavoriteGlobal: _toggleFavorite,
+                                onRefresh: _loadFavorites,
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
                   ),
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
@@ -585,11 +611,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           if (_showFilterOverlay)
             Positioned.fill(
               child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _showFilterOverlay = false;
-                  });
-                },
+                onTap: () => setState(() => _showFilterOverlay = false),
                 child: Container(
                   color: Colors.transparent,
                   child: Stack(
@@ -597,39 +619,40 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       Positioned(
                         top: 120,
                         right: 24,
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: Material(
-                            color: Colors.transparent,
-                            child: Container(
-                              width: 200,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.15),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 4),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Container(
+                            width: 260,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.15),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildFilterSection('Sort By', [
+                                  _buildRadioOption(
+                                    'Most Recent',
+                                    'mostRecent',
                                   ),
-                                ],
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Sort by section
-                                  _buildFilterSection('Sort By', [
-                                    _buildRadioOption(
-                                      'Most Recent',
-                                      'mostRecent',
-                                    ),
-                                    _buildRadioOption('Oldest', 'oldest'),
-                                  ]),
-
-                                  const Divider(
-                                    height: 1,
-                                    color: Color(0xFFE0E0E0),
+                                  _buildRadioOption('Oldest', 'oldest'),
+                                ]),
+                                const Divider(
+                                  height: 1,
+                                  color: Color(0xFFE0E0E0),
+                                ),
+                                _buildFilterSection('Disease', [
+                                  _buildCheckboxOption(
+                                    'Rice Yellowing Syndrome',
+                                    'yellowing',
                                   ),
 
                                   // Disease section
@@ -735,18 +758,23 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                                 : const BorderSide(color: Color(0xFF757575), width: 1),
                                           ),
                                         ),
-                                        child: const Text(
-                                          'Save Changes',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            6,
                                           ),
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'Save Changes',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
                                         ),
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -764,7 +792,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   
   Widget _buildFilterSection(String title, List<Widget> children) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -786,13 +814,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   
   Widget _buildRadioOption(String label, String value) {
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          _sortBy = value;
-        });
-      },
+      onTap: () => setState(() => _sortBy = value),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(vertical: 6),
         child: Row(
           children: [
             Icon(
@@ -808,11 +832,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               color: _sortBy == value ? const Color(0xFF099509) : Colors.grey[400],
             ),
             const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(fontSize: 13, color: Colors.black87),
-              ),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 13, color: Colors.black87),
             ),
           ],
         ),
@@ -820,7 +842,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     );
   }
 
-  Widget _buildDiseaseCheckboxOption(String label, String value) {
+  Widget _buildCheckboxOption(String label, String value) {
     final isSelected = _selectedDiseases.contains(value);
 
                 style: TextStyle(
@@ -842,17 +864,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         : _selectedDiseases.contains(value);
     
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          if (isSelected) {
-            _selectedDiseases.remove(value);
-          } else {
-            _selectedDiseases.add(value);
-          }
-        });
-      },
+      onTap: () => setState(
+        () => isSelected
+            ? _selectedDiseases.remove(value)
+            : _selectedDiseases.add(value),
+      ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(vertical: 6),
         child: Row(
           children: [
             Icon(
@@ -885,6 +903,7 @@ class _FavoriteCard extends StatelessWidget {
   final String date;
   final Map<String, Map<String, String>> favoritedArticles;
   final Function(String, String, String, String) onToggleFavoriteGlobal;
+  final VoidCallback? onRefresh;
 
   const _FavoriteCard({
     required this.image,
@@ -893,14 +912,15 @@ class _FavoriteCard extends StatelessWidget {
     required this.date,
     required this.favoritedArticles,
     required this.onToggleFavoriteGlobal,
+    this.onRefresh,
   });
 
   @override
   Widget build(BuildContext context) {
     final bool isFav = favoritedArticles.containsKey(title);
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ArticleScreen(
@@ -917,6 +937,7 @@ class _FavoriteCard extends StatelessWidget {
             ),
           ),
         );
+        onRefresh?.call();
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -958,14 +979,16 @@ class _FavoriteCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      '$author • $date',
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
+                    if (author.trim().isNotEmpty && date.trim().isNotEmpty) ...[
+                      Text(
+                        '$author • $date',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
+                      const SizedBox(height: 8),
+                    ],
                     Text(
                       title,
                       style: const TextStyle(
@@ -1050,6 +1073,7 @@ class _ArticleCard extends StatelessWidget {
   final VoidCallback onToggleFavorite;
   final Map<String, Map<String, String>> favoritedArticles;
   final Function(String, String, String, String) onToggleFavoriteGlobal;
+  final VoidCallback? onRefresh;
 
   const _ArticleCard({
     required this.image,
@@ -1060,13 +1084,14 @@ class _ArticleCard extends StatelessWidget {
     required this.onToggleFavorite,
     required this.favoritedArticles,
     required this.onToggleFavoriteGlobal,
+    this.onRefresh,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ArticleScreen(
@@ -1081,6 +1106,7 @@ class _ArticleCard extends StatelessWidget {
             ),
           ),
         );
+        onRefresh?.call();
       },
       child: Container(
         decoration: BoxDecoration(
@@ -1131,11 +1157,13 @@ class _ArticleCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '$author  •  $date',
-                      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                    ),
+                    if (author.trim().isNotEmpty && date.trim().isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        '$author  •  $date',
+                        style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                      ),
+                    ],
                   ],
                 ),
               ),

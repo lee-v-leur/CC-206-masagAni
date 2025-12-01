@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ArticleScreen extends StatefulWidget {
   final String image;
@@ -28,6 +30,54 @@ class ArticleScreen extends StatefulWidget {
 
 class _ArticleScreenState extends State<ArticleScreen> {
   bool _isTranslated = false;
+  late bool _isFavorited;
+
+  @override
+  void initState() {
+    super.initState();
+    _isFavorited = widget.isFavorited;
+  }
+
+  Future<void> _localToggleFavorite() async {
+    setState(() {
+      _isFavorited = !_isFavorited;
+    });
+    widget.onToggleFavorite();
+
+    // Also save to backend
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      print('No user logged in, cannot save bookmark');
+      return;
+    }
+    print('Saving bookmark for: ${widget.title}, favorited: $_isFavorited');
+
+    try {
+      final docRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('favorites')
+          .doc('articles');
+
+      if (_isFavorited) {
+        await docRef.set({
+          widget.title: {
+            'image': widget.image,
+            'author': widget.author,
+            'date': widget.date,
+          },
+        }, SetOptions(merge: true));
+      } else {
+        // Check if document exists before trying to update
+        final doc = await docRef.get();
+        if (doc.exists) {
+          await docRef.update({widget.title: FieldValue.delete()});
+        }
+      }
+    } catch (e) {
+      print('Error in article _localToggleFavorite: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,35 +95,33 @@ class _ArticleScreenState extends State<ArticleScreen> {
     // Get related articles based on current article
     final List<Map<String, String>> relatedArticles = _getRelatedArticles(widget.title);
 
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      body: Stack(
-        children: [
-          // Scrollable content
-          SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header image with overlay
-                Stack(
-                  children: [
-                    // Background image
-                    Image.asset(
-                      widget.image,
-                      width: double.infinity,
-                      height: 280,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        width: double.infinity,
-                        height: 280,
-                        color: Colors.green[200],
-                        child: const Icon(
-                          Icons.image,
-                          size: 64,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+                          Text(
+                            _isTranslated
+                                ? '2. Kontrolin ang mga Insektong Nagpapakalat ng Sakit'
+                                : '2. Control the Insects That Spread the Disease',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: darkGreen,
+                              height: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: Text(
+                              _isTranslated
+                                  ? 'Ang RYS ay konektado sa mga leafhopper at planthopper. Gumamit lamang ng insecticide kapag kinakailangan at i-rotate ang mga kemikal upang maiwasan ang imunidad. Makakatulong din ang mga likas na mandaragit ng mga naturang insekto sa pagkontrol ng kanilang populasyon.'
+                                  : 'RYS is linked to leafhoppers and planthoppers. Use insecticides only when needed and rotate chemicals to avoid resistance. Natural predators can also help control vector populations.',
+                              textAlign: TextAlign.justify,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                color: Colors.black87,
+                                height: 1.8,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
 
                         child: const Icon(Icons.image, size: 64, color: Colors.white),
                       ),
@@ -95,17 +143,18 @@ class _ArticleScreenState extends State<ArticleScreen> {
                               Colors.black.withOpacity(0.7),
                             ],
                           ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.title,
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: Text(
+                              _isTranslated
+                                  ? 'Ang balanseng pataba, lalo na ang potasa at silikon, ay nakatutulong sa mga halaman na makayanan ang impeksiyon. Iwasan ang sobrang nitrogeno dahil ito\'y nakaaakit ng insekto at nagpapahina sa resistensya ng halaman.'
+                                  : 'Balanced fertilizer, especially potassium and silicon, helps plants cope with infection. Avoid too much nitrogen, which attracts insects and weakens plant resistance.',
+                              textAlign: TextAlign.justify,
                               style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                height: 1.2,
+                                fontSize: 15,
+                                color: Colors.black87,
+                                height: 1.8,
                               ),
                             ),
                             if (widget.date.isNotEmpty) ...[
@@ -999,45 +1048,60 @@ class _ArticleScreenState extends State<ArticleScreen> {
                                 fit: BoxFit.cover,
                                 errorBuilder: (_, __, ___) => Container(
                                   height: 160,
-                                  color: Colors.green[200],
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Container(
+                                    height: 160,
+                                    color: Colors.green[200],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            flex: 2,
-                            child: Column(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.asset(
-                                    'assets/images/educ/sheath_blight.jpg',
-                                    height: 76,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Container(
+                            const SizedBox(width: 8),
+                            Expanded(
+                              flex: 2,
+                              child: Column(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.asset(
+                                      'assets/images/diseases/rys/sheathcover.jpg',
                                       height: 76,
-                                      color: Colors.green[200],
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => Container(
+                                        height: 76,
+                                        color: Colors.green[200],
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 8),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.asset(
-                                    'assets/images/educ/rice_immunity.jpg',
-                                    height: 76,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Container(
+                                  const SizedBox(height: 8),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.asset(
+                                      'assets/images/educ/rys_home.jpg',
                                       height: 76,
-                                      color: Colors.green[200],
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => Container(
+                                        height: 76,
+                                        color: Colors.green[200],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
+                          ],
+                        ),
+                      if (!isRYS) ...[
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.',
+                          textAlign: TextAlign.justify,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.black87,
+                            height: 1.6,
                           ),
                         ],
                       ),
@@ -1188,9 +1252,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
                           ),
                           child: IconButton(
                             padding: EdgeInsets.zero,
-                            onPressed: widget.onToggleFavorite,
+                            onPressed: _localToggleFavorite,
                             icon: Icon(
-                              widget.isFavorited
+                              _isFavorited
                                   ? Icons.bookmark
                                   : Icons.bookmark_border,
                               widget.isFavorited ? Icons.bookmark : Icons.bookmark_border,
@@ -1215,31 +1279,31 @@ class _ArticleScreenState extends State<ArticleScreen> {
   List<Map<String, String>> _getRelatedArticles(String currentTitle) {
     final allArticles = [
       {
-        'image': 'assets/images/educ/sheath_blight.jpg',
+        'image': 'assets/images/diseases/rys/sheathcover.jpg',
         'title': 'Hidden Under the Leaves: Detecting Sheath Blight Early',
         'author': 'Campbell, J.',
         'date': 'February 22, 2015',
       },
       {
-        'image': 'assets/images/educ/heat_stress.jpg',
+        'image': 'assets/images/diseases/rys/ryspaddy.png',
         'title': 'Is It Just Heat Stress or Rice Yellowing Syndrome?',
         'author': 'Keung, H.',
         'date': 'December 1, 2022',
       },
       {
-        'image': 'assets/images/educ/rice_immunity.jpg',
+        'image': 'assets/images/educ/boost-rice-immunity.jpg',
         'title': 'Simple Ways to Boost Rice Immunity Naturally',
         'author': 'McKinley, A.',
         'date': 'January 27, 2014',
       },
       {
-        'image': 'assets/images/educ/soil_care.jpg',
+        'image': 'assets/images/educ/stronger-rice-plants.jpg',
         'title': 'Proper Soil Care for Stronger Rice Plants',
         'author': 'Junior, Q.',
         'date': 'April 16, 2011',
       },
       {
-        'image': 'assets/images/educ/brown_spot.jpg',
+        'image': 'assets/images/diseases/rys/ryssymp.jpg',
         'title': 'Spotting Brown Spot Disease Before It Spreads',
         'author': 'Rodriguez, L.',
         'date': 'March 8, 2018',
