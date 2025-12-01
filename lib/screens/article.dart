@@ -437,11 +437,15 @@ class _ArticleScreenState extends State<ArticleScreen> {
                       ] else if (isBrownSpot) ...[
                         // Brown Spot Disease content
                         _buildDiseaseIntro(
-                          'Brown Spot is a major fungal disease of Oryza sativa, caused by Bipolaris oryzae (syn. Helminthosporium oryzae), and is considered one of the most damaging leaf diseases in rice production systems. Although not new, it remains highly persistent due to its ability to survive on infected seeds, plant debris, and in nutrient-poor soils.',
+                          _isTranslated
+                              ? 'Ang Brown Spot ay isang malubhang sakit na fungal ng Oryza sativa, na sanhi ng Bipolaris oryzae (syn. Helminthosporium oryzae), at itinuturing na isa sa pinakamakapinsalang sakit sa dahon sa mga sistema ng produksyon ng palay. Bagaman hindi bago, nananatiling mataas ang pagpapatuloy nito dahil sa kakayahan nitong mabuhay sa mga impektadong binhi, basura ng halaman, at sa mga lupang kulang sa sustansya.'
+                              : 'Brown Spot is a major fungal disease of Oryza sativa, caused by Bipolaris oryzae (syn. Helminthosporium oryzae), and is considered one of the most damaging leaf diseases in rice production systems. Although not new, it remains highly persistent due to its ability to survive on infected seeds, plant debris, and in nutrient-poor soils.',
                         ),
                         const SizedBox(height: 14),
                         _buildDiseaseIntro(
-                          'Brown Spot affects rice at all growth stages, from seedling establishment to grain filling, leading to poor stand, reduced leaf area, weakened plant physiology, and significant yield decline. Because its symptoms resemble those of nutrient deficiency—especially potassium deficiency—Brown Spot may be misdiagnosed in early phases, resulting in delayed management and wider field impact.',
+                          _isTranslated
+                              ? 'Ang Brown Spot ay nakakaapekto sa palay sa lahat ng yugto ng paglaki, mula sa pagtatatag ng punla hanggang sa pagpuno ng butil, na humahantong sa mahinang paninindigan, nabawasang lawak ng dahon, hinahang pisyolohiya ng halaman, at makabuluhang pagbaba ng ani. Dahil ang mga sintomas nito ay kahawig ng kakulangan sa sustansya—lalo na ang kakulangan ng potassium—ang Brown Spot ay maaaring madiagnose nang mali sa mga unang yugto, na nagreresulta sa naantalang pamamahala at mas malawak na epekto sa bukid.'
+                              : 'Brown Spot affects rice at all growth stages, from seedling establishment to grain filling, leading to poor stand, reduced leaf area, weakened plant physiology, and significant yield decline. Because its symptoms resemble those of nutrient deficiency—especially potassium deficiency—Brown Spot may be misdiagnosed in early phases, resulting in delayed management and wider field impact.',
                         ),
                         const SizedBox(height: 24),
 
@@ -462,11 +466,15 @@ class _ArticleScreenState extends State<ArticleScreen> {
                       ] else if (isSheathBlight) ...[
                         // Sheath Blight Disease content
                         _buildDiseaseIntro(
-                          'Sheath Blight is a major fungal disease of Oryza sativa, caused by Rhizoctonia solani, and is considered one of the most economically damaging diseases in intensified rice production systems. Although long recognized, it remains difficult to control due to its wide host range, ability to persist in soil, and rapid spread through dense canopies.',
+                          _isTranslated
+                              ? 'Ang Sheath Blight ay isang pangunahing sakit na fungal ng Oryza sativa, na sanhi ng Rhizoctonia solani, at itinuturing na isa sa pinakamakapinsalang ekonomikong sakit sa mga pinag-intinsipikarang sistema ng produksyon ng palay. Bagaman matagal nang kinikilala, nananatiling mahirap kontrolin dahil sa malawak nitong saklaw ng host, kakayahang manatili sa lupa, at mabilis na pagkalat sa makakapal na canopy.'
+                              : 'Sheath Blight is a major fungal disease of Oryza sativa, caused by Rhizoctonia solani, and is considered one of the most economically damaging diseases in intensified rice production systems. Although long recognized, it remains difficult to control due to its wide host range, ability to persist in soil, and rapid spread through dense canopies.',
                         ),
                         const SizedBox(height: 14),
                         _buildDiseaseIntro(
-                          'Sheath Blight affects rice from tillering to reproductive stages, leading to lodged plants, reduced grain filling, weakened stems, and significant yield losses. Because early symptoms can resemble nutrient-related sheath discoloration or insect injury, Sheath Blight is often underestimated until lesions expand rapidly across the crop.',
+                          _isTranslated
+                              ? 'Ang Sheath Blight ay nakakaapekto sa palay mula sa tillering hanggang reproductive stages, na humahantong sa mga nakahandusay na halaman, nabawasang pagpuno ng butil, hinahang tangkay, at makabuluhang pagkalugi sa ani. Dahil ang mga unang sintomas ay maaaring kahawig ng pagbabago ng kulay ng sheath na may kaugnayan sa sustansya o pinsala ng insekto, ang Sheath Blight ay madalas na hindi pinahahalagahan hanggang sa mabilis na lumalawak ang mga lesyon sa pananim.'
+                              : 'Sheath Blight affects rice from tillering to reproductive stages, leading to lodged plants, reduced grain filling, weakened stems, and significant yield losses. Because early symptoms can resemble nutrient-related sheath discoloration or insect injury, Sheath Blight is often underestimated until lesions expand rapidly across the crop.',
                         ),
                         const SizedBox(height: 28),
                       ] else if (isHeatStress) ...[
@@ -563,20 +571,28 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
                         if (isBrownSpot) ...[
                           _buildDiseaseIntro(
-                            'Brown Spot is caused by the necrotrophic fungus Bipolaris oryzae (formerly Helminthosporium oryzae or Cochliobolus miyabeanus). This pathogen thrives on weakened, stressed, or nutrient-deficient rice plants, especially when nitrogen and silica levels are low. B. oryzae initiates seedborne or soilborne inoculum, germinates on damp leaf surfaces, and penetrates host tissue through stomata or direct cuticle breach. Once inside, it secretes host-selective toxins that induce necrosis, leading to characteristic brown lesions on leaves, leaf sheaths, and glumes.',
+                            _isTranslated
+                                ? 'Ang Brown Spot ay sanhi ng necrotrophic fungus na Bipolaris oryzae (dating Helminthosporium oryzae o Cochliobolus miyabeanus). Ang pathogen na ito ay umuunlad sa mahihina, stressed, o kulang sa sustansya na halaman ng palay, lalo na kung mababa ang antas ng nitrogen at silica. Ang B. oryzae ay nagsisimula bilang seedborne o soilborne inoculum, sumusubol sa mga basang ibabaw ng dahon, at tumatagos sa tissue ng host sa pamamagitan ng stomata o direktang pagpasok sa cuticle. Kapag nasa loob na, naglalabas ito ng host-selective toxins na nagiging sanhi ng necrosis, na humahantong sa mga katangiang brown lesions sa mga dahon, leaf sheaths, at glumes.'
+                                : 'Brown Spot is caused by the necrotrophic fungus Bipolaris oryzae (formerly Helminthosporium oryzae or Cochliobolus miyabeanus). This pathogen thrives on weakened, stressed, or nutrient-deficient rice plants, especially when nitrogen and silica levels are low. B. oryzae initiates seedborne or soilborne inoculum, germinates on damp leaf surfaces, and penetrates host tissue through stomata or direct cuticle breach. Once inside, it secretes host-selective toxins that induce necrosis, leading to characteristic brown lesions on leaves, leaf sheaths, and glumes.',
                           ),
                           const SizedBox(height: 14),
                           _buildDiseaseIntro(
-                            'As the infection progresses, mature conidia are formed on the lesion surface and dispersed by wind, water splash, or human handling. Under prolonged leaf wetness (8–12 hours) and moderate temperatures (20–30°C), secondary cycles occur rapidly, amplifying disease pressure. Epidemics are particularly severe in rainfed lowlands or unfavorable upland conditions where soil fertility is marginal. In such environments, Brown Spot not only causes widespread foliar damage but also infects the grain directly, reducing both quality and marketability. Over time, repeated cycles in poorly managed fields sustain the fungus in crop residues and seed stocks, enabling recurrence in subsequent planting seasons.',
+                            _isTranslated
+                                ? 'Ang kontaminadong binhi ang nagdadala ng pathogen sa punlaan, na nagdudulot ng pagkabulok ng punla at hindi pantay na pagtubo. Ang nabubulok na dayami at tudling ng palay ay nagsisilbing imbakan ng fungi. Mainit na temperatura, matagal na pagkabasa ng dahon, at halumigmig ang nagpapabilis sa pagdami at pagkalat ng espora. Ang kawalan ng balanse sa sustansya, lalo na kakulangan sa potasa at silikon, ay nagpapataas ng pagiging sensitibo ng tanim. Ang pagpabalik-balik ng sakit ay maaaring dahil sa malawak na host range ng fungi, tibay ng halamang mabuhay sa kapaligiran, at kaugnayan nito sa mga palayang nasa ilalim ng stress.'
+                                : 'As the infection progresses, mature conidia are formed on the lesion surface and dispersed by wind, water splash, or human handling. Under prolonged leaf wetness (8–12 hours) and moderate temperatures (20–30°C), secondary cycles occur rapidly, amplifying disease pressure. Epidemics are particularly severe in rainfed lowlands or unfavorable upland conditions where soil fertility is marginal. In such environments, Brown Spot not only causes widespread foliar damage but also infects the grain directly, reducing both quality and marketability. Over time, repeated cycles in poorly managed fields sustain the fungus in crop residues and seed stocks, enabling recurrence in subsequent planting seasons.',
                           ),
                           const SizedBox(height: 28),
                         ] else if (isSheathBlight) ...[
                           _buildDiseaseIntro(
-                            'Sheath Blight is caused by the soil-borne fungus Rhizoctonia solani AG-1 IA. Unlike pathogens that rely primarily on airborne spores, R. solani persists as sclerotia in soil, stubble, and organic matter between cropping seasons. Upon flooding or high soil moisture, sclerotia germinate and produce mycelium that floats on water films or spreads along the plant base. Infection typically begins on the lower leaf sheaths near the waterline, where the fungus establishes an initial lesion. From there, it forms a thick, white mycelial mat that climbs upward on the plant and spreads laterally to adjacent tillers via leaf-to-leaf contact.',
+                            _isTranslated
+                                ? 'Ang Sheath Blight ay sanhi ng soil-borne fungus na Rhizoctonia solani AG-1 IA. Hindi tulad ng mga pathogen na umaasa pangunahin sa airborne spores, ang R. solani ay nananatili bilang sclerotia sa lupa, stubble, at organic matter sa pagitan ng mga cropping seasons. Kapag baha o mataas ang moisture ng lupa, ang sclerotia ay sumusubol at gumagawa ng mycelium na lumutang sa mga water films o kumakalat sa base ng halaman. Ang impeksyon ay karaniwang nagsisimula sa mga mas mababang leaf sheaths malapit sa waterline, kung saan ang fungus ay nagtatatag ng unang lesion. Mula doon, bumubuo ito ng makapal na puting mycelial mat na umaakyat pataas sa halaman at kumakalat patayo sa mga katabing tillers sa pamamagitan ng leaf-to-leaf contact.'
+                                : 'Sheath Blight is caused by the soil-borne fungus Rhizoctonia solani AG-1 IA. Unlike pathogens that rely primarily on airborne spores, R. solani persists as sclerotia in soil, stubble, and organic matter between cropping seasons. Upon flooding or high soil moisture, sclerotia germinate and produce mycelium that floats on water films or spreads along the plant base. Infection typically begins on the lower leaf sheaths near the waterline, where the fungus establishes an initial lesion. From there, it forms a thick, white mycelial mat that climbs upward on the plant and spreads laterally to adjacent tillers via leaf-to-leaf contact.',
                           ),
                           const SizedBox(height: 14),
                           _buildDiseaseIntro(
-                            'R. solani thrives in conditions of high humidity, dense plant canopies, and excessive nitrogen application. Overfertilization with nitrogen encourages lush vegetative growth but also increases canopy closure, reducing air circulation and light penetration. This microenvironment favors rapid mycelial proliferation. The pathogen damages host cells by secreting enzymes and toxins, leading to water-soaked lesions that eventually turn tan to gray with brown borders. Under severe infections, leaf blades become necrotic and collapse, sometimes resulting in lodging. The disease is self-sustaining: new sclerotia are produced on infected tissues and fall back to the soil or remain in stubble, perpetuating the cycle in subsequent crops.',
+                            _isTranslated
+                                ? 'Mataas na halumigmig, madalas na ulan, at kakulangan ng direktang araw. Siksik na tanim at sobra sa nitrogen. Continuous rice monocropping na nagpapadami ng inoculum sa lupa.'
+                                : 'R. solani thrives in conditions of high humidity, dense plant canopies, and excessive nitrogen application. Overfertilization with nitrogen encourages lush vegetative growth but also increases canopy closure, reducing air circulation and light penetration. This microenvironment favors rapid mycelial proliferation. The pathogen damages host cells by secreting enzymes and toxins, leading to water-soaked lesions that eventually turn tan to gray with brown borders. Under severe infections, leaf blades become necrotic and collapse, sometimes resulting in lodging. The disease is self-sustaining: new sclerotia are produced on infected tissues and fall back to the soil or remain in stubble, perpetuating the cycle in subsequent crops.',
                           ),
                           const SizedBox(height: 28),
                         ] else if (isRYS) ...[
@@ -620,76 +636,15 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
                           Padding(
                             padding: const EdgeInsets.only(left: 16),
-                            child: RichText(
+                            child: Text(
+                              _isTranslated
+                                  ? '• Brown Lesions (Kayumangging Peklat sa Dahon) – Maliliit na bilog hanggang pahabang batik na lumalaki at nagiging kayumangging sugat na may kulay abong gitna at madilim na gilid.\n\n• Leaf Blighting (Pagkalanta ng Dahon) – Sa matinding impeksyon, mabilis na natutuyo ang mga dahon at bumababa ang kakayahang mag-photosynthesize.\n\n• Seedling Blight (Pagkabulok ng Punla) – Nagpapakita ang mga punla ng kayumangging kulay, paghina, at pagkamatay, na nagreresulta sa hindi pantay na pagtatanim.\n\n• Reduced Tillering (Kulang sa Sanga) – Nalilimitahan ang paglago dahil sa stress at pinsala sa tisyu.\n\n• Poor Grain Filling (Mahinang Pagbubutil) – Nagbubunga ang mga palay ng magagaan at kulubot na butil dahil sa kawalan ng sapat na paglipat ng nutrisyon.'
+                                  : '• Brown Leaf Spots (Kayumangging Peklat sa Dahon) – Small to large oval or circular lesions with dark brown borders and gray to tan centers, commonly appearing on older leaves.\n\n• Leaf Blight (Pagkalanta ng Dahon) – Extensive necrosis leading to premature leaf senescence and reduced photosynthetic area, especially under severe infection.\n\n• Seedling Rot (Pagkabulok ng Punla) – Brown to black lesions on seed coats, coleoptiles, and young roots, resulting in poor germination and stunted seedlings.\n\n• Reduced Tillering (Kulang sa Sanga) – Limited tiller production due to overall plant weakening and nutrient stress.\n\n• Poor Grain Filling (Mahinang Pagbubutil) – Infection of panicles and glumes leads to incomplete or malformed grains, reducing overall yield and quality.',
                               textAlign: TextAlign.justify,
-                              text: const TextSpan(
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black87,
-                                  height: 1.8,
-                                ),
-                                children: [
-                                  TextSpan(
-                                    text:
-                                        '• Brown Leaf Spots (Kayumangging Peklat sa Dahon) – ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: darkGreen,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        'Small to large oval or circular lesions with dark brown borders and gray to tan centers, commonly appearing on older leaves.\n\n',
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        '• Leaf Blight (Pagkalanta ng Dahon) – ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: darkGreen,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        'Extensive necrosis leading to premature leaf senescence and reduced photosynthetic area, especially under severe infection.\n\n',
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        '• Seedling Rot (Pagkabulok ng Punla) – ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: darkGreen,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        'Brown to black lesions on seed coats, coleoptiles, and young roots, resulting in poor germination and stunted seedlings.\n\n',
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        '• Reduced Tillering (Kulang sa Sanga) – ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: darkGreen,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        'Limited tiller production due to overall plant weakening and nutrient stress.\n\n',
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        '• Poor Grain Filling (Mahinang Pagbubutil) – ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: darkGreen,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        'Infection of panicles and glumes leads to incomplete or malformed grains, reducing overall yield and quality.',
-                                  ),
-                                ],
+                              style: const TextStyle(
+                                fontSize: 15,
+                                color: Colors.black87,
+                                height: 1.8,
                               ),
                             ),
                           ),
@@ -710,87 +665,15 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
                           Padding(
                             padding: const EdgeInsets.only(left: 16),
-                            child: RichText(
+                            child: Text(
+                              _isTranslated
+                                  ? '• Sheath lesions (Mga batik sa dayami ng dahon) – Nagsisimula bilang oblong, water-soaked spots na nagiging abuhin na may kayumangging hangganan.\n\n• Mycelial growth (Puting sapot) – Makikitang puti, parang bulak na sapot sa pagitan ng mga tilos, lalo na kapag mataas ang halumigmig.\n\n• Lodging (Pagkahiga ng palay) – Lumalaylay ang mga katawan ng halaman dahil humihina ang culm.\n\n• Vertical spread (Pag-akyat ng sakit) – Umaakyat mula sheath patungo sa leaf blades at panicle base.\n\n• Poor grain filling (Mahinang pagbubutil) – Nagiging magaan at hindi buo ang palay dahil napuputol ang nutrient flow.\n\n• Sclerotia formation (Itim na bilog-bilog) – Lumilitaw sa loob ng sheath at katawan ng halaman—senyales ng malalang impeksiyon.'
+                                  : '• Water-Soaked Lesions on Leaf Sheaths (Mga Batik sa Dayami ng Dahon) – Initial greenish-gray lesions near the waterline, later expanding upward and becoming tan to brown with dark irregular borders.\n\n• White Fungal Mat (Puting Sapot) – Dense white to pale gray mycelium visible on infected sheaths during humid conditions, facilitating disease spread.\n\n• Lodging (Pagkahiga ng Palay) – Weakened stems and sheaths cause plants to topple, especially in dense stands with heavy panicles.\n\n• Upward Spread to Leaf Blades (Pag-akyat ng Sakit) – Lesions extend from sheaths to leaf blades, leading to large necrotic areas and accelerated leaf senescence.\n\n• Incomplete Grain Filling (Mahinang Pagbubutil) – Disrupted nutrient flow results in poor grain development and yield loss.\n\n• Sclerotia Formation (Itim na Bilog-Bilog) – Small, dark, hard sclerotia form on infected tissues and serve as survival structures for the fungus.',
                               textAlign: TextAlign.justify,
-                              text: const TextSpan(
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black87,
-                                  height: 1.8,
-                                ),
-                                children: [
-                                  TextSpan(
-                                    text:
-                                        '• Water-Soaked Lesions on Leaf Sheaths (Mga Batik sa Dayami ng Dahon) – ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: darkGreen,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        'Initial greenish-gray lesions near the waterline, later expanding upward and becoming tan to brown with dark irregular borders.\n\n',
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        '• White Fungal Mat (Puting Sapot) – ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: darkGreen,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        'Dense white to pale gray mycelium visible on infected sheaths during humid conditions, facilitating disease spread.\n\n',
-                                  ),
-                                  TextSpan(
-                                    text: '• Lodging (Pagkahiga ng Palay) – ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: darkGreen,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        'Weakened stems and sheaths cause plants to topple, especially in dense stands with heavy panicles.\n\n',
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        '• Upward Spread to Leaf Blades (Pag-akyat ng Sakit) – ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: darkGreen,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        'Lesions extend from sheaths to leaf blades, leading to large necrotic areas and accelerated leaf senescence.\n\n',
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        '• Incomplete Grain Filling (Mahinang Pagbubutil) – ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: darkGreen,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        'Disrupted nutrient flow results in poor grain development and yield loss.\n\n',
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        '• Sclerotia Formation (Itim na Bilog-Bilog) – ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: darkGreen,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        'Small, dark, hard sclerotia form on infected tissues and serve as survival structures for the fungus.',
-                                  ),
-                                ],
+                              style: const TextStyle(
+                                fontSize: 15,
+                                color: Colors.black87,
+                                height: 1.8,
                               ),
                             ),
                           ),
@@ -948,11 +831,15 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         ),
                         const SizedBox(height: 14),
                         _buildDiseaseIntro(
-                          'Brown Spot epidemics are driven by the interaction of seedborne and soilborne inoculum, environmental conditions, and host susceptibility. The fungus overwinters on crop residues, infected seed, and alternate weed hosts. When susceptible seeds are planted, early seedling infections provide a source of inoculum that spreads through conidia dispersed by wind, rain splash, or irrigation water. Prolonged periods of leaf wetness (≥8 hours) combined with moderate temperatures (20–30°C) are critical for conidial germination and penetration.',
+                          _isTranslated
+                              ? 'Ang pagkalat ng Brown Spot ay nakasalalay sa ugnayan ng fungi, kapaligiran, at kondisyon ng tanim. Seedborne Inoculum – Ang kontaminadong binhi ay nagpapataas ng panganib ng maagang impeksiyon. Pag-survive sa Crop Residues – Ang dayami at tudling na naiwan sa basa o lubog na lupa ay pinagmumulan ng inokulum. Kondisyong Pangkapaligiran – Mainit at mahalumigmig na klima, madalas na ulan, at matagal na pagkabasa ng dahon ay nagpapabilis sa pagtubo ng spores.'
+                              : 'Brown Spot epidemics are driven by the interaction of seedborne and soilborne inoculum, environmental conditions, and host susceptibility. The fungus overwinters on crop residues, infected seed, and alternate weed hosts. When susceptible seeds are planted, early seedling infections provide a source of inoculum that spreads through conidia dispersed by wind, rain splash, or irrigation water. Prolonged periods of leaf wetness (≥8 hours) combined with moderate temperatures (20–30°C) are critical for conidial germination and penetration.',
                         ),
                         const SizedBox(height: 14),
                         _buildDiseaseIntro(
-                          'Disease severity is exacerbated by nutrient deficiencies, particularly nitrogen and silicon, which weaken plant defenses. Rainfed lowlands, upland rice systems with marginal soils, and areas with erratic rainfall patterns are especially prone to severe Brown Spot outbreaks. Secondary infection cycles occur rapidly under conducive conditions, leading to widespread foliar damage and grain infection. In addition, the pathogen can persist on weed hosts and volunteer rice plants, maintaining inoculum levels between cropping seasons. Poor seed health practices, such as using infected seed or failing to treat seed before planting, perpetuate the disease cycle and increase epidemic risk.',
+                          _isTranslated
+                              ? 'Stress ng Halaman – Kakulangan sa sustansya, tagtuyot, o hindi balanseng pataba ang nagpapalala sa sakit. Dispersal Dynamics – Kumakalat ang spores sa pamamagitan ng hangin, patak ng ulan, at kontaminadong kagamitan o sapatos. Siksik na Pagtatanim – Nagtatrap ito ng moisture at lumilikha ng ideal na pamumugaran ng fungi. Pinakamarami ang sakit sa mga tanim na nasa stress, lalo na sa mga lugar na kulang sa nutrisyon o hindi maayos ang pamamahala.'
+                              : 'Disease severity is exacerbated by nutrient deficiencies, particularly nitrogen and silicon, which weaken plant defenses. Rainfed lowlands, upland rice systems with marginal soils, and areas with erratic rainfall patterns are especially prone to severe Brown Spot outbreaks. Secondary infection cycles occur rapidly under conducive conditions, leading to widespread foliar damage and grain infection. In addition, the pathogen can persist on weed hosts and volunteer rice plants, maintaining inoculum levels between cropping seasons. Poor seed health practices, such as using infected seed or failing to treat seed before planting, perpetuate the disease cycle and increase epidemic risk.',
                         ),
                         const SizedBox(height: 28),
 
@@ -969,11 +856,15 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         ),
                         const SizedBox(height: 14),
                         _buildDiseaseIntro(
-                          'Brown Spot occurs in virtually all rice-growing regions worldwide, from Asia to Africa, Latin America, and parts of the United States. It is a chronic problem in rainfed lowland and upland ecosystems where soil fertility is suboptimal. In Asia, countries such as India, Bangladesh, Thailand, Vietnam, Indonesia, and the Philippines regularly report Brown Spot as a yield-limiting factor, particularly during seasons with erratic rainfall or drought stress.',
+                          _isTranslated
+                              ? 'Naulat ang Brown Spot sa halos lahat ng pangunahing rehiyon ng pagtatanim ng palay sa buong mundo, kabilang ang South Asia, Southeast Asia, East Asia, Africa, at Latin America. Partikular itong malala sa rainfed at upland areas na madalas dumanas ng tagtuyot at kakulangan sa nutrisyon. Ang makasaysayang paglaganap nito—gaya ng epidemic na kaugnay ng Bengal famine—ay nagpapakita ng kakayahan nitong magdulot ng malawakang pinsala at banta sa seguridad sa pagkain.'
+                              : 'Brown Spot occurs in virtually all rice-growing regions worldwide, from Asia to Africa, Latin America, and parts of the United States. It is a chronic problem in rainfed lowland and upland ecosystems where soil fertility is suboptimal. In Asia, countries such as India, Bangladesh, Thailand, Vietnam, Indonesia, and the Philippines regularly report Brown Spot as a yield-limiting factor, particularly during seasons with erratic rainfall or drought stress.',
                         ),
                         const SizedBox(height: 14),
                         _buildDiseaseIntro(
-                          'In the Philippines, Brown Spot is endemic across rice-producing provinces. It is most problematic in rainfed areas with nutrient-poor soils, such as upland rice systems in Mindanao and marginally fertile lowlands in Visayas and Luzon. The disease is often observed during the wet season when leaf wetness is prolonged, but it can also flare up during dry spells that stress plants and make them more susceptible to infection. The Philippine Rice Research Institute (PhilRice) and the Department of Agriculture have documented recurring Brown Spot outbreaks, emphasizing the need for improved seed health, balanced fertilization, and resistant varieties to manage this persistent disease.',
+                          _isTranslated
+                              ? 'Malaganap ang sakit sa iba\'t ibang ekosistemang palay sa Pilipinas—mula tag-ulan hanggang tag-init na taniman. Madalas itong makita sa rainfed, upland, at marginal soils na kulang sa potasa at pana-panahong nakararanas ng tagtuyot. Ang impeksiyon mula sa punlaan at mga tanim na kulang sa sustansya ang nagdudulot ng paulit-ulit na pag-atake. Kadalasan itong inilalabas sa mga ulat sa plant pathology sa bansa, lalo na tuwing El Niño at mababa ang fertility ng lupa.'
+                              : 'In the Philippines, Brown Spot is endemic across rice-producing provinces. It is most problematic in rainfed areas with nutrient-poor soils, such as upland rice systems in Mindanao and marginally fertile lowlands in Visayas and Luzon. The disease is often observed during the wet season when leaf wetness is prolonged, but it can also flare up during dry spells that stress plants and make them more susceptible to infection. The Philippine Rice Research Institute (PhilRice) and the Department of Agriculture have documented recurring Brown Spot outbreaks, emphasizing the need for improved seed health, balanced fertilization, and resistant varieties to manage this persistent disease.',
                         ),
                         const SizedBox(height: 28),
                       ] else if (isSheathBlight) ...[
@@ -988,11 +879,15 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         ),
                         const SizedBox(height: 14),
                         _buildDiseaseIntro(
-                          'Sheath Blight epidemics are driven by soilborne inoculum in the form of sclerotia, which survive in soil and crop residues between seasons. Upon flooding, sclerotia float to the water surface and germinate, producing mycelium that infects the lower leaf sheaths. Initial infections typically occur near the waterline during the tillering to booting stages. From there, the fungus spreads upward and laterally via mycelial growth and leaf-to-leaf contact, especially in dense canopies with high humidity.',
+                          _isTranslated
+                              ? 'Ang Sheath Blight ay nagmumula sa soil inoculum, pinaiigting ng microclimate, at pinalalala ng pamamaraang agrikultural. Sclerotia sa lupa na nananatiling aktibo ng maraming taon. Natirang dayami at mga hindi nabulok na tangkay. Pagkalat sa tubig-patubig at kagamitan.'
+                              : 'Sheath Blight epidemics are driven by soilborne inoculum in the form of sclerotia, which survive in soil and crop residues between seasons. Upon flooding, sclerotia float to the water surface and germinate, producing mycelium that infects the lower leaf sheaths. Initial infections typically occur near the waterline during the tillering to booting stages. From there, the fungus spreads upward and laterally via mycelial growth and leaf-to-leaf contact, especially in dense canopies with high humidity.',
                         ),
                         const SizedBox(height: 14),
                         _buildDiseaseIntro(
-                          'Key factors promoting Sheath Blight include: (1) high plant density and excessive nitrogen fertilization, which lead to lush vegetative growth and canopy closure; (2) prolonged periods of high humidity and warm temperatures (25–32°C); and (3) continuous flooding that facilitates sclerotial germination and mycelial spread. The disease is often more severe in high-yielding, modern varieties that have dense canopies. Under optimal conditions for the pathogen, lesions expand rapidly, coalesce, and cause extensive sheath and leaf blade necrosis. The cycle perpetuates as new sclerotia form on infected tissues and return to the soil, ensuring recurrence in subsequent crops.',
+                          _isTranslated
+                              ? '28–32°C na temperatura at mataas na halumigmig. Mahabang leaf wetness dahil sa ulan at siksik na canopy. Cloudy at madilim na araw na nagpapa-aktibo ng fungus. Sobra sa nitrogen → pagsisikip ng tanim → trap trap ng moisture. Maalwang tubig at mahinang drainage. Varieties na mataas at makikapal ang dahon. Tubig sa pilapil, sclerotia na lumulutang. Halaman-sa-halamang kontak. Kontaminadong sapatos, kagamitan, at makina.'
+                              : 'Key factors promoting Sheath Blight include: (1) high plant density and excessive nitrogen fertilization, which lead to lush vegetative growth and canopy closure; (2) prolonged periods of high humidity and warm temperatures (25–32°C); and (3) continuous flooding that facilitates sclerotial germination and mycelial spread. The disease is often more severe in high-yielding, modern varieties that have dense canopies. Under optimal conditions for the pathogen, lesions expand rapidly, coalesce, and cause extensive sheath and leaf blade necrosis. The cycle perpetuates as new sclerotia form on infected tissues and return to the soil, ensuring recurrence in subsequent crops.',
                         ),
                         const SizedBox(height: 28),
 
@@ -1009,11 +904,15 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         ),
                         const SizedBox(height: 14),
                         _buildDiseaseIntro(
-                          'Sheath Blight is a major constraint to rice production worldwide, with significant impacts in Asia, particularly in irrigated lowland systems. It is endemic in countries such as China, India, Japan, Korea, Vietnam, Thailand, Indonesia, and the Philippines. The disease thrives in intensive rice cultivation systems where high-yielding varieties, dense planting, and heavy nitrogen application are common practices.',
+                          _isTranslated
+                              ? 'Lag widespread ang Sheath Blight sa mga bansang nagtatanim ng palay: South Asia, Southeast Asia, East Asia, US, at Latin America. Mas sumisidhi ang pinsala sa mga lugar na gumagamit ng mataas na nitrogen, semi-dwarf varieties, at irrigated systems—katulad ng kondisyon sa Pilipinas.'
+                              : 'Sheath Blight is a major constraint to rice production worldwide, with significant impacts in Asia, particularly in irrigated lowland systems. It is endemic in countries such as China, India, Japan, Korea, Vietnam, Thailand, Indonesia, and the Philippines. The disease thrives in intensive rice cultivation systems where high-yielding varieties, dense planting, and heavy nitrogen application are common practices.',
                         ),
                         const SizedBox(height: 14),
                         _buildDiseaseIntro(
-                          'In the Philippines, Sheath Blight is prevalent in irrigated lowlands across Central Luzon, Western Visayas, and other major rice-producing regions. The disease is a recurring problem during the wet season when humidity is high and canopy density is greatest. PhilRice and the Department of Agriculture have identified Sheath Blight as one of the top biotic constraints to rice yield. Management efforts focus on optimizing nitrogen use, improving canopy ventilation through proper spacing and water management, and deploying moderately resistant varieties. Despite these efforts, Sheath Blight remains a persistent challenge, particularly in high-input, high-yield production systems.',
+                          _isTranslated
+                              ? 'Sa Pilipinas, malaganap ang Sheath Blight sa irrigated lowlands, lalo na sa wet season. Kadalasang naiuulat sa: Central Luzon, Western Visayas, Mindanao. Pinakamadalas ang outbreak kapag: Mataas ang ulan, Makakapal ang tanim, Maraming residue sa bukid, Nitrogen-heavy ang pataba.'
+                              : 'In the Philippines, Sheath Blight is prevalent in irrigated lowlands across Central Luzon, Western Visayas, and other major rice-producing regions. The disease is a recurring problem during the wet season when humidity is high and canopy density is greatest. PhilRice and the Department of Agriculture have identified Sheath Blight as one of the top biotic constraints to rice yield. Management efforts focus on optimizing nitrogen use, improving canopy ventilation through proper spacing and water management, and deploying moderately resistant varieties. Despite these efforts, Sheath Blight remains a persistent challenge, particularly in high-input, high-yield production systems.',
                         ),
                         const SizedBox(height: 28),
                       ] else if (isRYS) ...[
@@ -1306,7 +1205,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
                           Text(
                             _isTranslated
-                                ? '1. Alisin ang mga Apektadong Punla'
+                                ? '1. Alisin ang Matinding Apektadong Punla'
                                 : '1. Remove Infected Seedlings',
                             style: const TextStyle(
                               fontSize: 18,
@@ -1320,7 +1219,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             padding: const EdgeInsets.only(left: 16),
                             child: Text(
                               _isTranslated
-                                  ? 'Tanggalin at sunugin ang mga punlang may malubhang impeksyon upang mabawasan ang pinagmulan ng sakit sa taniman.'
+                                  ? 'Bunutin ang malubhang tinamaan na punla upang mabawasan ang dami ng fungi at maiwasan ang malawakang pagkasira ng tanim.'
                                   : 'Remove and burn heavily infected seedlings to reduce inoculum sources in the field.',
                               textAlign: TextAlign.justify,
                               style: const TextStyle(
@@ -1334,7 +1233,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
                           Text(
                             _isTranslated
-                                ? '2. Pahusayin ang Nutrisyon ng Halaman'
+                                ? '2. Agarang Pag-ayos ng Nutrisyon'
                                 : '2. Improve Plant Nutrition',
                             style: const TextStyle(
                               fontSize: 18,
@@ -1348,7 +1247,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             padding: const EdgeInsets.only(left: 16),
                             child: Text(
                               _isTranslated
-                                  ? 'Maglagay ng tamang dami ng nitrogenong pataba at silica upang mapalakas ang depensa ng halaman laban sa B. oryzae.'
+                                  ? 'Maglagay ng patabang mayaman sa potasa at silikon upang patibayin ang tisyu at resistensya ng halaman. Iwasan ang sobrang nitrogen dahil nagpapataas ito ng pagiging sensitibo.'
                                   : 'Apply balanced nitrogen and silica fertilization to strengthen plant defenses against B. oryzae.',
                               textAlign: TextAlign.justify,
                               style: const TextStyle(
@@ -1362,7 +1261,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
                           Text(
                             _isTranslated
-                                ? '3. Mag-apply ng Fungicide'
+                                ? '3. Foliar Fungicide (Kung Kailangan)'
                                 : '3. Apply Fungicides',
                             style: const TextStyle(
                               fontSize: 18,
@@ -1376,7 +1275,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             padding: const EdgeInsets.only(left: 16),
                             child: Text(
                               _isTranslated
-                                  ? 'Gumamit ng rehistradong fungicide tulad ng tricyclazole, carbendazim, o propiconazole batay sa lokong rekomendasyon at mga gabay sa paggamit.'
+                                  ? 'Gumamit ng aprubadong fungicide laban sa Bipolaris habang aktibo ang pagkalat, lalo na sa tillering at early reproductive stages. Mag-rotate ng active ingredients upang hindi mawalan ng bisa.'
                                   : 'Use registered fungicides such as tricyclazole, carbendazole, or propiconazole following local recommendations and application guidelines.',
                               textAlign: TextAlign.justify,
                               style: const TextStyle(
@@ -1390,7 +1289,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
                           Text(
                             _isTranslated
-                                ? '4. Gumamit ng Malusog na Binhi'
+                                ? '4. Tamang Pamamahala ng Tubig'
                                 : '4. Use Healthy Seeds',
                             style: const TextStyle(
                               fontSize: 18,
@@ -1404,7 +1303,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             padding: const EdgeInsets.only(left: 16),
                             child: Text(
                               _isTranslated
-                                  ? 'Piliin ang mga sertipikadong binhi at tratuhin ang mga ito gamit ang hot water o kemikal na seed treatment upang patayin ang pathogen.'
+                                  ? 'Panatilihing sapat ang moisture sa lupa at iwasan ang matinding tagtuyot.'
                                   : 'Select certified seeds and treat them with hot water or chemical seed treatments to eliminate seed-borne pathogens.',
                               textAlign: TextAlign.justify,
                               style: const TextStyle(
@@ -1418,7 +1317,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
                           Text(
                             _isTranslated
-                                ? '5. Pamahalaan ang mga Natitirang Pananim'
+                                ? '5. Dagdagan ang Airflow sa Masisiksik na Bahagi'
                                 : '5. Manage Crop Residues',
                             style: const TextStyle(
                               fontSize: 18,
@@ -1432,8 +1331,92 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             padding: const EdgeInsets.only(left: 16),
                             child: Text(
                               _isTranslated
-                                  ? 'Araruhin o sunugin ang mga natitira sa ani upang mabawasan ang patuloy na pinagmulan ng inoculum sa lupa.'
+                                  ? 'Kung maaari, bawasan ang sobrang kapal ng tanim upang mabawasan ang tagal ng pagkabasa ng dahon.'
                                   : 'Plow under or burn crop residues to reduce carry-over inoculum in the soil.',
+                              textAlign: TextAlign.justify,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                color: Colors.black87,
+                                height: 1.8,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          Text(
+                            _isTranslated
+                                ? '6. Linisin ang Kagamitan at Iwasang Maglipat ng Kontaminasyon'
+                                : '6. Clean Equipment and Avoid Contamination',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: darkGreen,
+                              height: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: Text(
+                              _isTranslated
+                                  ? 'I-disinfect ang kagamitan, bota, at iba pang gamit upang maiwasan ang pagkalat ng spores.'
+                                  : 'Disinfect equipment, boots, and other tools to prevent spread of spores.',
+                              textAlign: TextAlign.justify,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                color: Colors.black87,
+                                height: 1.8,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          Text(
+                            _isTranslated
+                                ? '7. Maagang Pag-ani (Kung Matindi na ang Pinsala)'
+                                : '7. Early Harvest (If Severe Damage)',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: darkGreen,
+                              height: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: Text(
+                              _isTranslated
+                                  ? 'Kung mahina na ang pagbubutil at mabilis ang paglala ng mga sugat, magsagawa ng maagang pag-ani upang masagip ang natitirang ani.'
+                                  : 'If grain filling is weak and lesions are rapidly worsening, conduct early harvest to salvage remaining yield.',
+                              textAlign: TextAlign.justify,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                color: Colors.black87,
+                                height: 1.8,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          Text(
+                            _isTranslated
+                                ? '8. I-dokumento ang Pinsala para sa Replanting at Tulong'
+                                : '8. Document Damage for Replanting and Assistance',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: darkGreen,
+                              height: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: Text(
+                              _isTranslated
+                                  ? 'Itala kung: saan unang lumitaw ang sintomas, paano kumalat ang sakit, at anong bahagi ang pinakaapektado. Makakatulong ito sa susunod na cropping at sa pagkuha ng tulong mula sa ahensya o institusyon.'
+                                  : 'Record where symptoms first appeared, how the disease spread, and which areas were most affected. This will help in the next cropping season and in obtaining assistance from agencies or institutions.',
                               textAlign: TextAlign.justify,
                               style: const TextStyle(
                                 fontSize: 15,
@@ -1459,7 +1442,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
                           Text(
                             _isTranslated
-                                ? '1. Pamahalaan ang mga Nakahigang Halaman'
+                                ? '1. Gupitin o i-isolate ang mga bahaging malala ang tama'
                                 : '1. Manage Lodged Areas',
                             style: const TextStyle(
                               fontSize: 18,
@@ -1473,7 +1456,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             padding: const EdgeInsets.only(left: 16),
                             child: Text(
                               _isTranslated
-                                  ? 'Tanggalin o gupitin ang mga talagang malubhang nakahigang halaman upang mapahusay ang daloy ng hangin at mabawasan ang mycelial spread.'
+                                  ? 'Nakababawas ng inoculum at pumipigil sa pagkalat sa mga katabing hanay.'
                                   : 'Remove or cut severely lodged plants to improve air circulation and reduce mycelial spread.',
                               textAlign: TextAlign.justify,
                               style: const TextStyle(
@@ -1487,7 +1470,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
                           Text(
                             _isTranslated
-                                ? '2. Pahusayin ang Bentilasyon ng Canopy'
+                                ? '2. Pagaanin ang canopy'
                                 : '2. Improve Canopy Aeration',
                             style: const TextStyle(
                               fontSize: 18,
@@ -1501,7 +1484,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             padding: const EdgeInsets.only(left: 16),
                             child: Text(
                               _isTranslated
-                                  ? 'Gumamit ng tamang spacing at iwasan ang sobrang nitrogen upang mabawasan ang siksikan ng canopy.'
+                                  ? 'Tanggalin ang sobrang sanga o ayusin ang tubig upang mabawasan ang trapped humidity.'
                                   : 'Use proper spacing and avoid excessive nitrogen to reduce canopy density.',
                               textAlign: TextAlign.justify,
                               style: const TextStyle(
@@ -1515,7 +1498,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
                           Text(
                             _isTranslated
-                                ? '3. Mag-apply ng Fungicide'
+                                ? '3. Ayusin ang pataba'
                                 : '3. Apply Fungicides',
                             style: const TextStyle(
                               fontSize: 18,
@@ -1529,7 +1512,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             padding: const EdgeInsets.only(left: 16),
                             child: Text(
                               _isTranslated
-                                  ? 'Gumamit ng rehistradong fungicide tulad ng azoxystrobin, validamycin, o hexaconazole sa panahon ng active tillering hanggang booting stage.'
+                                  ? 'Iwasan ang labis na nitrogen; dagdagan ang potassium at silicon para tumibay ang tisyu ng halaman.'
                                   : 'Use registered fungicides such as azoxystrobin, validamycin, or hexaconazole during active tillering to booting stage.',
                               textAlign: TextAlign.justify,
                               style: const TextStyle(
@@ -1543,7 +1526,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
                           Text(
                             _isTranslated
-                                ? '4. I-optimize ang Fertilizer Application'
+                                ? '4. Gumamit ng targeted fungicide kapag kinakailangan'
                                 : '4. Optimize Fertilizer Application',
                             style: const TextStyle(
                               fontSize: 18,
@@ -1557,7 +1540,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             padding: const EdgeInsets.only(left: 16),
                             child: Text(
                               _isTranslated
-                                  ? 'Iwasan ang sobrang nitrogen at magbalanse ng potassium at phosphorus upang mapalakas ang halaman nang hindi tumataas ang susceptibility.'
+                                  ? 'Ilapat sa tillering–booting stage; mag-rotate ng chemical groups para maiwasan ang resistance.'
                                   : 'Avoid excessive nitrogen and balance potassium and phosphorus to strengthen plants without increasing susceptibility.',
                               textAlign: TextAlign.justify,
                               style: const TextStyle(
@@ -1571,7 +1554,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
                           Text(
                             _isTranslated
-                                ? '5. Pamahalaan ang Tubig'
+                                ? '5. Ayusin ang water management'
                                 : '5. Manage Water',
                             style: const TextStyle(
                               fontSize: 18,
@@ -1585,8 +1568,92 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             padding: const EdgeInsets.only(left: 16),
                             child: Text(
                               _isTranslated
-                                  ? 'Gumamit ng alternate wetting and drying (AWD) o iba pang diskarteng water management upang mabawasan ang tuloy-tuloy na baha na nakakatulong sa pagkalat ng sclerotia.'
+                                  ? 'Iwasan ang malalim na tubig; panatilihing pantay ang distribusyon ng patubig.'
                                   : 'Use alternate wetting and drying (AWD) or other water management strategies to reduce continuous flooding that facilitates sclerotial germination.',
+                              textAlign: TextAlign.justify,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                color: Colors.black87,
+                                height: 1.8,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          Text(
+                            _isTranslated
+                                ? '6. Linisin ang kagamitan at limitahan ang paggalaw sa bukid'
+                                : '6. Clean Equipment and Limit Field Movement',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: darkGreen,
+                              height: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: Text(
+                              _isTranslated
+                                  ? 'Para hindi mailipat ang sclerotia sa mas malinis na bahagi.'
+                                  : 'To prevent transfer of sclerotia to cleaner areas.',
+                              textAlign: TextAlign.justify,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                color: Colors.black87,
+                                height: 1.8,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          Text(
+                            _isTranslated
+                                ? '7. Maagang anihin ang sobrang tinamaan'
+                                : '7. Early Harvest for Severely Affected Areas',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: darkGreen,
+                              height: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: Text(
+                              _isTranslated
+                                  ? 'Kung umabot sa panicles ang impeksiyon, nakakapagligtas ito ng grain quality.'
+                                  : 'If infection reaches panicles, this can salvage grain quality.',
+                              textAlign: TextAlign.justify,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                color: Colors.black87,
+                                height: 1.8,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          Text(
+                            _isTranslated
+                                ? '8. I-dokumento ang pinsala'
+                                : '8. Document the Damage',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: darkGreen,
+                              height: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: Text(
+                              _isTranslated
+                                  ? 'Gamitin para sa susunod na cropping season: variety choice, residue management, at planting density.'
+                                  : 'Use for next cropping season: variety choice, residue management, and planting density.',
                               textAlign: TextAlign.justify,
                               style: const TextStyle(
                                 fontSize: 15,
@@ -1989,7 +2056,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                     // Action buttons
                     Row(
                       children: [
-                        if (isRYS) ...[
+                        if (isRYS || isBrownSpot || isSheathBlight) ...[
                           Container(
                             width: 36,
                             height: 36,
