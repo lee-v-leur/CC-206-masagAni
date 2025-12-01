@@ -33,6 +33,34 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   final Map<String, Map<String, String>> _favoritedArticles = {};
   bool _isLoadingFavorites = true;
 
+  // Featured disease articles for carousel
+  final List<_ArticleData> _featuredDiseases = [
+    _ArticleData(
+      image: 'assets/images/diseases/rys/ryspaddy.png',
+      title: 'Rice Yellowing Syndrome',
+      author: '',
+      displayDate: '',
+      published: DateTime(2023, 6, 15),
+      diseaseTags: {'yellowing'},
+    ),
+    _ArticleData(
+      image: 'assets/images/diseases/rys/sheathcover.jpg',
+      title: 'Sheath Blight Disease',
+      author: '',
+      displayDate: '',
+      published: DateTime(2023, 6, 14),
+      diseaseTags: {'sheath'},
+    ),
+    _ArticleData(
+      image: 'assets/images/educ/brown-spot-disease.jpg',
+      title: 'Spotting Brown Spot Disease Before It Spreads',
+      author: 'Rodriguez, L.',
+      displayDate: 'March 8, 2018',
+      published: DateTime(2018, 3, 8),
+      diseaseTags: {'brownspot'},
+    ),
+  ];
+
   // Sample articles data
   final List<_ArticleData> _allArticles = [
     _ArticleData(
@@ -52,11 +80,27 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       diseaseTags: {'general'},
     ),
     _ArticleData(
+      image: 'assets/images/educ/is-it-just-heat.jpg',
+      title: 'Is It Just Heat Stress or Rice Yellowing Syndrome?',
+      author: 'Keung, H.',
+      displayDate: 'December 1, 2022',
+      published: DateTime(2022, 12, 1),
+      diseaseTags: {'yellowing'},
+    ),
+    _ArticleData(
+      image: 'assets/images/educ/brown-spot-disease.jpg',
+      title: 'Spotting Brown Spot Disease Before It Spreads',
+      author: 'Rodriguez, L.',
+      displayDate: 'March 8, 2018',
+      published: DateTime(2018, 3, 8),
+      diseaseTags: {'brownspot'},
+    ),
+    _ArticleData(
       image: 'assets/images/diseases/rys/ryspaddy.png',
       title: 'Rice Yellowing Syndrome',
       author: '',
       displayDate: '',
-      published: DateTime.now(),
+      published: DateTime(2023, 6, 15),
       diseaseTags: {'yellowing'},
     ),
     _ArticleData(
@@ -64,7 +108,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       title: 'Sheath Blight Disease',
       author: '',
       displayDate: '',
-      published: DateTime.now().subtract(const Duration(days: 1)),
+      published: DateTime(2023, 6, 14),
       diseaseTags: {'sheath'},
     ),
   ];
@@ -187,13 +231,14 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     }
   }
 
-  List<Widget> _buildFavoriteCards() {
-    return _favoritedArticles.entries.map((entry) {
+  List<Widget> _buildDiseaseCards() {
+    return _featuredDiseases.map((disease) {
+      final bool isFav = _favoritedArticles.containsKey(disease.title);
       return _FavoriteCard(
-        image: entry.value['image']!,
-        title: entry.key,
-        author: entry.value['author']!,
-        date: entry.value['date']!,
+        image: disease.image,
+        title: disease.title,
+        author: disease.author,
+        date: disease.displayDate,
         favoritedArticles: _favoritedArticles,
         onToggleFavoriteGlobal: _toggleFavorite,
         onRefresh: _loadFavorites,
@@ -318,49 +363,16 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
                   const SizedBox(height: 24),
 
-                  // Favorites carousel
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Favorites',
-                          style: TextStyle(
-                            color: Color(0xFF8BC34A),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => FavoritesScreen(
-                                  favoritedArticles: _favoritedArticles,
-                                  onToggleFavorite: _toggleFavorite,
-                                ),
-                              ),
-                            ).then((_) => _loadFavorites());
-                          },
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(0, 0),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: const Text(
-                            'View all',
-                            style: TextStyle(
-                              color: Color(0xFF8BC34A),
-                              fontSize: 12,
-                              decoration: TextDecoration.underline,
-                              decorationColor: Color(0xFF8BC34A),
-                              decorationThickness: 1,
-                            ),
-                          ),
-                        ),
-                      ],
+                  // Featured diseases carousel
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    child: Text(
+                      'Featured Diseases',
+                      style: TextStyle(
+                        color: Color(0xFF8BC34A),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
 
@@ -368,52 +380,37 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
                   SizedBox(
                     height: 200,
-                    child: _favoritedArticles.isEmpty
-                        ? Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(24.0),
-                              child: Text(
-                                'No favorites yet. Tap the bookmark icon on articles to add them here!',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          )
-                        : PageView(
-                            controller: _pageController,
-                            padEnds: false,
-                            onPageChanged: (index) {
-                              setState(() {
-                                _currentPage = index;
-                              });
-                            },
-                            children: _buildFavoriteCards(),
-                          ),
+                    child: PageView(
+                      controller: _pageController,
+                      padEnds: false,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentPage = index;
+                        });
+                      },
+                      children: _buildDiseaseCards(),
+                    ),
                   ),
 
                   const SizedBox(height: 12),
 
-                  if (_favoritedArticles.isNotEmpty)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        _favoritedArticles.length,
-                        (index) => Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: _currentPage == index
-                                ? const Color(0xFF8BC34A)
-                                : Colors.grey[400],
-                          ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      _featuredDiseases.length,
+                      (index) => Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _currentPage == index
+                              ? const Color(0xFF8BC34A)
+                              : Colors.grey[400],
                         ),
                       ),
                     ),
+                  ),
 
                   const SizedBox(height: 24),
 

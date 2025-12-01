@@ -92,11 +92,26 @@ class _ArticleScreenState extends State<ArticleScreen> {
     );
     final bool isDiseaseArticle = isRYS || isBrownSpot || isSheathBlight;
 
+    // Check for general articles
+    final bool isBoostImmunity =
+        widget.title.toLowerCase().contains('boost') &&
+        widget.title.toLowerCase().contains('immunity');
+    final bool isSoilCare =
+        widget.title.toLowerCase().contains('soil') &&
+        widget.title.toLowerCase().contains('care');
+    final bool isHeatStress = widget.title.toLowerCase().contains(
+      'heat stress',
+    );
+    final bool isBrownSpotEarly =
+        widget.title.toLowerCase().contains('spotting') &&
+        widget.title.toLowerCase().contains('brown spot');
+
     // Determine if this article should show symptoms section
     final bool shouldShowSymptoms =
         !widget.title.toLowerCase().contains('care') &&
         !widget.title.toLowerCase().contains('boost') &&
-        !widget.title.toLowerCase().contains('manage');
+        !widget.title.toLowerCase().contains('manage') &&
+        !widget.title.toLowerCase().contains('heat stress');
 
     // Get related articles based on current article
     final List<Map<String, String>> relatedArticles = _getRelatedArticles(
@@ -396,29 +411,16 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         ),
                         const SizedBox(height: 24),
 
-                        // Cause image - clickable for fullscreen
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => _FullScreenImage(
-                                  imagePath:
-                                      'assets/images/diseases/rys/ryscause.png',
-                                ),
-                              ),
-                            );
-                          },
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.asset(
-                              'assets/images/diseases/rys/ryscause.png',
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Container(
-                                height: 200,
-                                color: Colors.green[200],
-                              ),
+                        // Cause image
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.asset(
+                            'assets/images/diseases/rys/ryscause.png',
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              height: 200,
+                              color: Colors.green[200],
                             ),
                           ),
                         ),
@@ -441,6 +443,21 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         _buildDiseaseIntro(
                           'Brown Spot affects rice at all growth stages, from seedling establishment to grain filling, leading to poor stand, reduced leaf area, weakened plant physiology, and significant yield decline. Because its symptoms resemble those of nutrient deficiency—especially potassium deficiency—Brown Spot may be misdiagnosed in early phases, resulting in delayed management and wider field impact.',
                         ),
+                        const SizedBox(height: 24),
+
+                        // Brown spot cover image
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.asset(
+                            'assets/images/diseases/brown/browncover.jpg',
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              height: 200,
+                              color: Colors.green[200],
+                            ),
+                          ),
+                        ),
                         const SizedBox(height: 28),
                       ] else if (isSheathBlight) ...[
                         // Sheath Blight Disease content
@@ -452,15 +469,81 @@ class _ArticleScreenState extends State<ArticleScreen> {
                           'Sheath Blight affects rice from tillering to reproductive stages, leading to lodged plants, reduced grain filling, weakened stems, and significant yield losses. Because early symptoms can resemble nutrient-related sheath discoloration or insect injury, Sheath Blight is often underestimated until lesions expand rapidly across the crop.',
                         ),
                         const SizedBox(height: 28),
+                      ] else if (isHeatStress) ...[
+                        _buildDiseaseIntro(
+                          'A common problem in rice fields is distinguishing leaf yellowing from hot weather from yellowing caused by Rice Yellowing Syndrome. Both conditions look similar but have completely different origins. Hot weather disrupts plant functions directly, while the syndrome is a viral disease spread by small insects called planthoppers. Using the wrong treatment for either condition wastes effort and resources.',
+                        ),
+                        const SizedBox(height: 14),
+                        _buildDiseaseIntro(
+                          'Heat-related yellowing often appears more even across the plant or shows as scorched leaf tips, especially during dry, hot periods. Yellowing from the viral syndrome tends to be patchier and is accompanied by other clear signs. These signs include twisted leaves, ragged leaf edges, and plants that are stunted but produce many small, useless shoots. Looking for these specific symptoms is a key step in diagnosis.',
+                        ),
+                        const SizedBox(height: 14),
+                        _buildDiseaseIntro(
+                          'A practical approach involves checking three things: recent weather, the presence of planthoppers on the plants, and the shape and pattern of the yellow leaves. Yellowing from heat may lessen with improved irrigation and cooling practices. Yellowing from the viral disease does not reverse and requires managing the insect population.',
+                        ),
+                        const SizedBox(height: 14),
+                        _buildDiseaseIntro(
+                          'Correctly identifying the cause directs the farmer\'s next steps. Addressing heat stress focuses on water and temperature management. Addressing the viral syndrome focuses on controlling insects and removing infected plants to prevent further spread.',
+                        ),
+                        const SizedBox(height: 24),
+                      ] else if (isBoostImmunity) ...[
+                        _buildDiseaseIntro(
+                          'Helping rice plants resist sickness can involve strengthening their natural defenses instead of relying only on chemical sprays. The goal is to create more resilient plants that can better handle attacks from diseases and pests, potentially leading to more reliable harvests with fewer inputs.',
+                        ),
+                        const SizedBox(height: 14),
+                        _buildDiseaseIntro(
+                          'One approach focuses on the life in the soil. Increasing beneficial bacteria and fungi around plant roots, often by adding compost or certain natural amendments, can improve a plant\'s health. These microbes help with nutrient uptake and can activate the plant\'s internal defense systems. Practices like reduced tillage and planting cover crops support this underground ecosystem.',
+                        ),
+                        const SizedBox(height: 14),
+                        _buildDiseaseIntro(
+                          'Certain nutrients also play a direct role in plant armor. Silicon, found in materials like rice hull ash, is absorbed by the plant and deposited in cell walls. This makes tissues physically tougher and harder for pests and fungi to penetrate. Balanced fertilization, which avoids excess nitrogen that promotes soft, vulnerable growth, is equally important.',
+                        ),
+                        const SizedBox(height: 14),
+                        _buildDiseaseIntro(
+                          'Natural sprays made from substances like seaweed or fermented plant extracts can act as mild signals to the plant. These signals prepare the plant\'s immune system to respond faster and stronger if a real disease threat arrives later. Combining these strategies—healthy soil, smart nutrition, and natural stimulants—builds a more durable crop.',
+                        ),
+                        const SizedBox(height: 28),
+
+                        const SizedBox(height: 24),
+                      ] else if (isSoilCare) ...[
+                        _buildDiseaseIntro(
+                          'The health of a rice crop depends greatly on the condition of the soil it grows in. Well-managed soil provides a strong foundation, supporting better root development and giving plants consistent access to water and nutrients. Plants growing in such soil are generally more robust and better equipped to handle stress.',
+                        ),
+                        const SizedBox(height: 14),
+                        _buildDiseaseIntro(
+                          'Good soil structure is vital. Practices that avoid creating a hard, compacted layer underground allow roots to grow deep. Adding organic material, like crop residues or manure, helps the soil hold moisture and stay loose. This structure also lets air reach the roots, which is crucial for healthy growth.',
+                        ),
+                        const SizedBox(height: 14),
+                        _buildDiseaseIntro(
+                          'Soil nutrients should be applied based on need, not habit. Excessive nitrogen fertilizer is a frequent issue, as it produces lush, tender growth that attracts insects and diseases. A balanced supply of nutrients, with particular attention to potassium, helps plants regulate water use and build stronger tissues. Fixing soil problems often prevents many plant health issues.',
+                        ),
+                        const SizedBox(height: 14),
+                        _buildDiseaseIntro(
+                          'Healthy soil hosts a community of worms, insects, and microbes. This living system helps suppress harmful organisms that cause disease. When soil is cared for properly, plants develop extensive root systems. These deep roots allow plants to access resources more effectively, helping them stay vigorous during challenges like drought or pest pressure.',
+                        ),
+                        const SizedBox(height: 28),
+
+                        const SizedBox(height: 24),
+                      ] else if (isBrownSpotEarly) ...[
+                        _buildDiseaseIntro(
+                          'Brown Spot is a fungal disease that can significantly reduce rice yields, especially when plants are under stress. Early detection is crucial because the initial symptoms are small and easy to miss or mistake for other problems like nutrient deficiency. Recognizing these first signs allows for timely and more effective management.',
+                        ),
+                        const SizedBox(height: 14),
+                        _buildDiseaseIntro(
+                          'The fungus thrives in certain conditions. It is most severe in soils that are low in nutrients, especially potassium and silicon, and in fields with poor drainage. The disease often starts on the older, lower leaves. The classic early symptom is the appearance of small, oval, dark brown spots on the leaf blades. High humidity and long periods of leaf wetness help the fungus spread.',
+                        ),
+                        const SizedBox(height: 14),
+                        _buildDiseaseIntro(
+                          'A useful step is to compare these spots with symptoms from other common issues. For example, damage from bacterial disease often looks wetter and may ooze tiny droplets, while fungal spots remain dry. Finding even a few characteristic brown spots on lower leaves, particularly in a field with known poor soil or a history of the disease, should be taken as an early warning.',
+                        ),
+                        const SizedBox(height: 14),
+                        _buildDiseaseIntro(
+                          'Upon identifying the disease, an integrated response is recommended. Improving soil nutrition and water management addresses the underlying stress that makes plants susceptible. For fields with a known history of the disease, treating seeds before planting can prevent infection from starting. If weather conditions favor the fungus, a targeted fungicide application may be considered to protect the crop during its most vulnerable stages.',
+                        ),
+                        const SizedBox(height: 24),
                       ] else ...[
-                        const Text(
-                          'Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.',
-                          textAlign: TextAlign.justify,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black87,
-                            height: 1.6,
-                          ),
+                        _buildDiseaseIntro(
+                          'This article provides valuable insights and practical knowledge for rice farmers and agricultural professionals. Our team continuously researches and compiles information to help improve rice cultivation practices.',
                         ),
                         const SizedBox(height: 24),
                       ],
@@ -811,60 +894,28 @@ class _ArticleScreenState extends State<ArticleScreen> {
                           Row(
                             children: [
                               Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => _ImageGallery(
-                                          initialIndex: 0,
-                                          imagePaths: const [
-                                            'assets/images/diseases/rys/rysdiagnosis.jpg',
-                                            'assets/images/diseases/rys/ryscomp.jpg',
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.asset(
-                                      'assets/images/diseases/rys/rysdiagnosis.jpg',
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => Container(
-                                        height: 200,
-                                        color: Colors.green[200],
-                                      ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.asset(
+                                    'assets/images/diseases/rys/rysdiagnosis.jpg',
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Container(
+                                      height: 200,
+                                      color: Colors.green[200],
                                     ),
                                   ),
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => _ImageGallery(
-                                          initialIndex: 1,
-                                          imagePaths: const [
-                                            'assets/images/diseases/rys/rysdiagnosis.jpg',
-                                            'assets/images/diseases/rys/ryscomp.jpg',
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.asset(
-                                      'assets/images/diseases/rys/ryscomp.jpg',
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => Container(
-                                        height: 200,
-                                        color: Colors.green[200],
-                                      ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.asset(
+                                    'assets/images/diseases/rys/ryscomp.jpg',
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Container(
+                                      height: 200,
+                                      color: Colors.green[200],
                                     ),
                                   ),
                                 ),
@@ -881,17 +932,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             ),
                           ),
                           const SizedBox(height: 28),
-                        ] else ...[
-                          const Text(
-                            'Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper',
-                            textAlign: TextAlign.justify,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black87,
-                              height: 1.6,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
                         ],
                       ],
 
@@ -1142,130 +1182,105 @@ class _ArticleScreenState extends State<ArticleScreen> {
                           Row(
                             children: [
                               Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => _ImageGallery(
-                                          initialIndex: 0,
-                                          imagePaths: const [
-                                            'assets/images/diseases/rys/ricetips.jpg',
-                                            'assets/images/diseases/rys/ryscover.png',
-                                            'assets/images/diseases/rys/ryss1.png',
-                                            'assets/images/diseases/rys/ryssymp.jpg',
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.asset(
-                                      'assets/images/diseases/rys/ricetips.jpg',
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.asset(
+                                    'assets/images/diseases/rys/ricetips.jpg',
+                                    height: 120,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Container(
                                       height: 120,
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => Container(
-                                        height: 120,
-                                        color: Colors.green[200],
-                                      ),
+                                      color: Colors.green[200],
                                     ),
                                   ),
                                 ),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => _ImageGallery(
-                                          initialIndex: 1,
-                                          imagePaths: const [
-                                            'assets/images/diseases/rys/ricetips.jpg',
-                                            'assets/images/diseases/rys/ryscover.png',
-                                            'assets/images/diseases/rys/ryss1.png',
-                                            'assets/images/diseases/rys/ryssymp.jpg',
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.asset(
-                                      'assets/images/diseases/rys/ryscover.png',
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.asset(
+                                    'assets/images/diseases/rys/ryscover.png',
+                                    height: 120,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Container(
                                       height: 120,
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => Container(
-                                        height: 120,
-                                        color: Colors.green[200],
-                                      ),
+                                      color: Colors.green[200],
                                     ),
                                   ),
                                 ),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => _ImageGallery(
-                                          initialIndex: 2,
-                                          imagePaths: const [
-                                            'assets/images/diseases/rys/ricetips.jpg',
-                                            'assets/images/diseases/rys/ryscover.png',
-                                            'assets/images/diseases/rys/ryss1.png',
-                                            'assets/images/diseases/rys/ryssymp.jpg',
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: Stack(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Image.asset(
-                                          'assets/images/diseases/rys/ryss1.png',
-                                          height: 120,
-                                          width: double.infinity,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (_, __, ___) =>
-                                              Container(
-                                                height: 120,
-                                                color: Colors.green[200],
-                                              ),
-                                        ),
-                                      ),
-                                      Positioned.fill(
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.black.withOpacity(
-                                              0.6,
-                                            ),
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
-                                          ),
-                                          child: const Center(
-                                            child: Text(
-                                              '+1',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 32,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.asset(
+                                    'assets/images/diseases/rys/ryss1.png',
+                                    height: 120,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Container(
+                                      height: 120,
+                                      color: Colors.green[200],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 28),
+                        ],
+
+                        // Image Gallery for Brown Spot
+                        if (isBrownSpot) ...[
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.asset(
+                                    'assets/images/diseases/brown/brown1.jpg',
+                                    height: 120,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Container(
+                                      height: 120,
+                                      color: Colors.green[200],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.asset(
+                                    'assets/images/diseases/brown/brown2.jpg',
+                                    height: 120,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Container(
+                                      height: 120,
+                                      color: Colors.green[200],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.asset(
+                                    'assets/images/diseases/brown/brown3.png',
+                                    height: 120,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Container(
+                                      height: 120,
+                                      color: Colors.green[200],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -1814,7 +1829,10 @@ class _ArticleScreenState extends State<ArticleScreen> {
                       ],
 
                       // Image grid
-                      if (!isRYS)
+                      if (!isRYS &&
+                          !isHeatStress &&
+                          !isBoostImmunity &&
+                          !isSoilCare)
                         Row(
                           children: [
                             Expanded(
@@ -1822,7 +1840,11 @@ class _ArticleScreenState extends State<ArticleScreen> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
                                 child: Image.asset(
-                                  'assets/images/educ/rice101.jpg',
+                                  isBrownSpot || isBrownSpotEarly
+                                      ? 'assets/images/diseases/brown/brown4.jpg'
+                                      : isSheathBlight
+                                      ? 'assets/images/diseases/sb/sb1.jpg'
+                                      : 'assets/images/diseases/brown/brown7.jpg',
                                   height: 160,
                                   fit: BoxFit.cover,
                                   errorBuilder: (_, __, ___) => Container(
@@ -1840,7 +1862,11 @@ class _ArticleScreenState extends State<ArticleScreen> {
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(8),
                                     child: Image.asset(
-                                      'assets/images/diseases/rys/sheathcover.jpg',
+                                      isBrownSpot || isBrownSpotEarly
+                                          ? 'assets/images/diseases/brown/brown5.webp'
+                                          : isSheathBlight
+                                          ? 'assets/images/diseases/sb/sb2.jpg'
+                                          : 'assets/images/diseases/rys/sheathcover.jpg',
                                       height: 76,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
@@ -1854,7 +1880,11 @@ class _ArticleScreenState extends State<ArticleScreen> {
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(8),
                                     child: Image.asset(
-                                      'assets/images/educ/rys_home.jpg',
+                                      isBrownSpot || isBrownSpotEarly
+                                          ? 'assets/images/diseases/brown/brown6.webp'
+                                          : isSheathBlight
+                                          ? 'assets/images/diseases/sb/sbb.png'
+                                          : 'assets/images/educ/rys_home.jpg',
                                       height: 76,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
@@ -1869,19 +1899,17 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             ),
                           ],
                         ),
-                      if (!isRYS) ...[
+                      if (!isDiseaseArticle &&
+                          !isBoostImmunity &&
+                          !isSoilCare) ...[
                         const SizedBox(height: 20),
-                        const Text(
-                          'Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.',
-                          textAlign: TextAlign.justify,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black87,
-                            height: 1.6,
-                          ),
+                        _buildDiseaseIntro(
+                          'Rice cultivation is a complex practice that combines traditional knowledge with modern agricultural science. Successful rice farming requires understanding the interplay between crop physiology, environmental conditions, and management practices to achieve optimal yields while maintaining sustainability.',
                         ),
                         const SizedBox(height: 32),
                       ],
+
+                      const SizedBox(height: 40),
 
                       // Related Articles section
                       const Text(
@@ -2035,7 +2063,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
         'date': 'February 22, 2015',
       },
       {
-        'image': 'assets/images/diseases/rys/ryspaddy.png',
+        'image': 'assets/images/educ/is-it-just-heat.jpg',
         'title': 'Is It Just Heat Stress or Rice Yellowing Syndrome?',
         'author': 'Keung, H.',
         'date': 'December 1, 2022',
