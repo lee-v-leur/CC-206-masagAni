@@ -7,8 +7,8 @@ import 'welcome_screen.dart';
 import 'edit_profile.dart';
 import 'homepage.dart';
 import 'plot_manager.dart';
-import 'rewards.dart';
 import 'discover.dart';
+import 'rewards.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
