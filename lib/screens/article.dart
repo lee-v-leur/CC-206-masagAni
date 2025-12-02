@@ -436,16 +436,45 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         const SizedBox(height: 28),
                       ] else if (isBrownSpot) ...[
                         // Brown Spot Disease content
-                        _buildDiseaseIntro(
-                          _isTranslated
-                              ? 'Ang Brown Spot ay isang malubhang sakit na fungal ng Oryza sativa, na sanhi ng Bipolaris oryzae (syn. Helminthosporium oryzae), at itinuturing na isa sa pinakamakapinsalang sakit sa dahon sa mga sistema ng produksyon ng palay. Bagaman hindi bago, nananatiling mataas ang pagpapatuloy nito dahil sa kakayahan nitong mabuhay sa mga impektadong binhi, basura ng halaman, at sa mga lupang kulang sa sustansya.'
-                              : 'Brown Spot is a major fungal disease of Oryza sativa, caused by Bipolaris oryzae (syn. Helminthosporium oryzae), and is considered one of the most damaging leaf diseases in rice production systems. Although not new, it remains highly persistent due to its ability to survive on infected seeds, plant debris, and in nutrient-poor soils.',
-                        ),
-                        const SizedBox(height: 14),
-                        _buildDiseaseIntro(
-                          _isTranslated
-                              ? 'Ang Brown Spot ay nakakaapekto sa palay sa lahat ng yugto ng paglaki, mula sa pagtatatag ng punla hanggang sa pagpuno ng butil, na humahantong sa mahinang paninindigan, nabawasang lawak ng dahon, hinahang pisyolohiya ng halaman, at makabuluhang pagbaba ng ani. Dahil ang mga sintomas nito ay kahawig ng kakulangan sa sustansya—lalo na ang kakulangan ng potassium—ang Brown Spot ay maaaring madiagnose nang mali sa mga unang yugto, na nagreresulta sa naantalang pamamahala at mas malawak na epekto sa bukid.'
-                              : 'Brown Spot affects rice at all growth stages, from seedling establishment to grain filling, leading to poor stand, reduced leaf area, weakened plant physiology, and significant yield decline. Because its symptoms resemble those of nutrient deficiency—especially potassium deficiency—Brown Spot may be misdiagnosed in early phases, resulting in delayed management and wider field impact.',
+                        RichText(
+                          text: TextSpan(
+                            style: const TextStyle(
+                              fontSize: 15,
+                              color: Colors.black87,
+                              height: 1.8,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: _isTranslated
+                                    ? 'Ang Brown Spot ay isang malubhang sakit na fungal ng '
+                                    : 'Brown Spot is a major fungal disease of ',
+                              ),
+                              const TextSpan(
+                                text: 'Oryza sativa',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: darkGreen,
+                                ),
+                              ),
+                              TextSpan(
+                                text: _isTranslated
+                                    ? ', na sanhi ng '
+                                    : ', caused by ',
+                              ),
+                              const TextSpan(
+                                text: 'Bipolaris oryzae',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: darkGreen,
+                                ),
+                              ),
+                              TextSpan(
+                                text: _isTranslated
+                                    ? ', at itinuturing na isa sa pinakamakapinsalang sakit sa dahon sa mga sistema ng produksyon ng palay. Bagaman hindi bago, nananatiling mataas ang pagpapatuloy nito dahil sa kakayahan nitong mabuhay sa mga impektadong binhi, basura ng halaman, at sa mga lupang kulang sa sustansya.\n\nAng Brown Spot ay nakakaapekto sa palay sa lahat ng yugto ng paglaki, mula sa pagtatatag ng punla hanggang sa pagpuno ng butil, na humahantong sa mahinang paninindigan, nabawasang lawak ng dahon, hinahang pisyolohiya ng halaman, at makabuluhang pagbaba ng ani. Dahil ang mga sintomas nito ay kahawig ng kakulangan sa sustansya—lalo na ang kakulangan ng potassium—ang Brown Spot ay maaaring madiagnose nang mali sa mga unang yugto, na nagreresulta sa naantalang pamamahala at mas malawak na epekto sa bukid.'
+                                    : ' (syn. Helminthosporium oryzae), and is considered one of the most damaging leaf diseases in rice production systems. Although not new, it remains highly persistent due to its ability to survive on infected seeds, plant debris, and in nutrient-poor soils.\n\nBrown Spot affects rice at all growth stages, from seedling establishment to grain filling, leading to poor stand, reduced leaf area, weakened plant physiology, and significant yield decline. Because its symptoms resemble those of nutrient deficiency—especially potassium deficiency—Brown Spot may be misdiagnosed in early phases, resulting in delayed management and wider field impact.',
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 24),
 
@@ -465,16 +494,45 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         const SizedBox(height: 28),
                       ] else if (isSheathBlight) ...[
                         // Sheath Blight Disease content
-                        _buildDiseaseIntro(
-                          _isTranslated
-                              ? 'Ang Sheath Blight ay isang pangunahing sakit na fungal ng Oryza sativa, na sanhi ng Rhizoctonia solani, at itinuturing na isa sa pinakamakapinsalang ekonomikong sakit sa mga pinag-intinsipikarang sistema ng produksyon ng palay. Bagaman matagal nang kinikilala, nananatiling mahirap kontrolin dahil sa malawak nitong saklaw ng host, kakayahang manatili sa lupa, at mabilis na pagkalat sa makakapal na canopy.'
-                              : 'Sheath Blight is a major fungal disease of Oryza sativa, caused by Rhizoctonia solani, and is considered one of the most economically damaging diseases in intensified rice production systems. Although long recognized, it remains difficult to control due to its wide host range, ability to persist in soil, and rapid spread through dense canopies.',
-                        ),
-                        const SizedBox(height: 14),
-                        _buildDiseaseIntro(
-                          _isTranslated
-                              ? 'Ang Sheath Blight ay nakakaapekto sa palay mula sa tillering hanggang reproductive stages, na humahantong sa mga nakahandusay na halaman, nabawasang pagpuno ng butil, hinahang tangkay, at makabuluhang pagkalugi sa ani. Dahil ang mga unang sintomas ay maaaring kahawig ng pagbabago ng kulay ng sheath na may kaugnayan sa sustansya o pinsala ng insekto, ang Sheath Blight ay madalas na hindi pinahahalagahan hanggang sa mabilis na lumalawak ang mga lesyon sa pananim.'
-                              : 'Sheath Blight affects rice from tillering to reproductive stages, leading to lodged plants, reduced grain filling, weakened stems, and significant yield losses. Because early symptoms can resemble nutrient-related sheath discoloration or insect injury, Sheath Blight is often underestimated until lesions expand rapidly across the crop.',
+                        RichText(
+                          text: TextSpan(
+                            style: const TextStyle(
+                              fontSize: 15,
+                              color: Colors.black87,
+                              height: 1.8,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: _isTranslated
+                                    ? 'Ang Sheath Blight ay isang pangunahing sakit na fungal ng '
+                                    : 'Sheath Blight is a major fungal disease of ',
+                              ),
+                              const TextSpan(
+                                text: 'Oryza sativa',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: darkGreen,
+                                ),
+                              ),
+                              TextSpan(
+                                text: _isTranslated
+                                    ? ', na sanhi ng '
+                                    : ', caused by ',
+                              ),
+                              const TextSpan(
+                                text: 'Rhizoctonia solani',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: darkGreen,
+                                ),
+                              ),
+                              TextSpan(
+                                text: _isTranslated
+                                    ? ', at itinuturing na isa sa pinakamakapinsalang ekonomikong sakit sa mga pinag-intinsipikarang sistema ng produksyon ng palay. Bagaman matagal nang kinikilala, nananatiling mahirap kontrolin dahil sa malawak nitong saklaw ng host, kakayahang manatili sa lupa, at mabilis na pagkalat sa makakapal na canopy.\n\nAng Sheath Blight ay nakakaapekto sa palay mula sa tillering hanggang reproductive stages, na humahantong sa mga nakahandusay na halaman, nabawasang pagpuno ng butil, hinahang tangkay, at makabuluhang pagkalugi sa ani. Dahil ang mga unang sintomas ay maaaring kahawig ng pagbabago ng kulay ng sheath na may kaugnayan sa sustansya o pinsala ng insekto, ang Sheath Blight ay madalas na hindi pinahahalagahan hanggang sa mabilis na lumalawak ang mga lesyon sa pananim.'
+                                    : ', and is considered one of the most economically damaging diseases in intensified rice production systems. Although long recognized, it remains difficult to control due to its wide host range, ability to persist in soil, and rapid spread through dense canopies.\n\nSheath Blight affects rice from tillering to reproductive stages, leading to lodged plants, reduced grain filling, weakened stems, and significant yield losses. Because early symptoms can resemble nutrient-related sheath discoloration or insect injury, Sheath Blight is often underestimated until lesions expand rapidly across the crop.',
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 28),
                       ] else if (isHeatStress) ...[

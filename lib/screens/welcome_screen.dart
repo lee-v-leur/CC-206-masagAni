@@ -118,10 +118,15 @@ class WelcomeScreen extends StatelessWidget {
                               text: "Don't have an account? ",
                               style: TextStyle(
                                 fontSize: 13,
-                                color: const Color.fromARGB(160, 5, 0, 0),
+                                color: const Color.fromARGB(255, 255, 255, 255),
                                 shadows: [
                                   Shadow(
-                                    color: Colors.black.withOpacity(0.45),
+                                    color: const Color.fromARGB(
+                                      255,
+                                      0,
+                                      0,
+                                      0,
+                                    ).withOpacity(0.45),
                                     offset: Offset(0, 1),
                                     blurRadius: 3,
                                   ),
@@ -132,7 +137,7 @@ class WelcomeScreen extends StatelessWidget {
                               text: 'Sign Up.',
                               style: TextStyle(
                                 fontSize: 13,
-                                color: Color(0xFF099509),
+                                color: Color.fromARGB(255, 101, 109, 8),
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
